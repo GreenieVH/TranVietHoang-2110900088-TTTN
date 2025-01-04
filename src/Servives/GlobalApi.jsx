@@ -9,8 +9,9 @@ const options = {
 };
 
 export function useGetPopular() {
-  const [dataPopular, setDataPopular] = useState();
+  const [dataPopular, setDataPopular] = useState([]);
   const url = "https://api.themoviedb.org/3/movie/popular?language=vi&page=1";
+
   const fetchPopular = async () => {
     try {
       const response = await fetch(url, options);
@@ -18,7 +19,7 @@ export function useGetPopular() {
         throw new Error("Network response was not ok");
       }
       const data = await response.json();
-      setDataPopular(data.results);
+      setDataPopular(data.results || []);
     } catch (error) {
         console.log(error);
     }
