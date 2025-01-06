@@ -16,12 +16,12 @@ function Header() {
 
   // Danh sách menu
   const menu = [
-    { name: "HOME", icon: HiHome},
-    { name: "SEARCH", icon: HiMagnifyingGlass },
-    { name: "WATCHLIST", icon: HiPlus },
-    { name: "MOVIES", icon: HiPlayCircle },
-    { name: "SERIES", icon: HiTv },
-    { name: "ORIGINALS", icon: HiStar },
+    { name: "Trang chủ", icon: HiHome,link: '/'},
+    { name: "Tìm kiếm", icon: HiMagnifyingGlass,link: '/' },
+    { name: "WATCHLIST", icon: HiPlus,link: '/' },
+    { name: "MOVIES", icon: HiPlayCircle,link: '/movies' },
+    { name: "Thể loại", icon: HiTv,link: '/category' },
+    { name: "ORIGINALS", icon: HiStar,link: '/' },
   ];
 
   // Đóng menu khi nhấp bên ngoài
@@ -38,11 +38,11 @@ function Header() {
   // Render menu
   const renderMenu = (menuItems) =>
     menuItems.map((item, index) => (
-      <HeaderItem key={index} name={item.name} Icon={item.icon} />
+      <HeaderItem key={index} name={item.name} Icon={item.icon} link={item.link}/>
     ));
 
   return (
-    <div className="flex p-6 items-center justify-between">
+    <div className="sticky top-0 z-50 bg-[#0c0f1b] flex p-6 items-center justify-between">
       <div className="flex gap-8">
         <div className="w-[80px] md:w-[115px] object-cover text-white">Logo</div>
 
