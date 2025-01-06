@@ -38,3 +38,10 @@
 .read-the-docs {
   color: #888;
 }
+
+.multiline-truncated {
+  display: -webkit-box;        /* Dùng box layout để tạo giới hạn dòng */
+  -webkit-line-clamp: 3;       /* Giới hạn hiển thị 3 dòng */
+  -webkit-box-orient: vertical; /* Đặt hướng là dọc */
+  overflow: hidden;            /* Ẩn phần nội dung vượt quá */
+}

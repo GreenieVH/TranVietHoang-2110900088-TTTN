@@ -1,5 +1,5 @@
 import React from "react";
-import { useGetPopular } from "../../Servives/GlobalApi";
+import { useGetPopular, useGetTrending } from "../../Servives/GlobalApi";
 import SlideItem from "./SlideItem";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
@@ -10,13 +10,14 @@ function Sliders() {
   const { dataPopular } = useGetPopular();
 
   const settings = {
-    dots: false,
+    dots: true,
     infinite: true,
     speed: 500,
-    slidesToShow: 2,
+    slidesToShow: 1,
     slidesToScroll: 1,
     autoplay: true,
     autoplaySpeed: 3000,
+    arrows: false,
     responsive: [
       {
         breakpoint: 1024,
@@ -44,6 +45,7 @@ function Sliders() {
             key={index}
             title={item.title}
             backdrop_path={item.backdrop_path}
+            overview={item.overview}
           />
         ))}
       </Slider>

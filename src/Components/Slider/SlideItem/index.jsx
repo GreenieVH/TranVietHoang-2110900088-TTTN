@@ -1,15 +1,21 @@
 import React from "react";
 
-function SlideItem({ title, backdrop_path }) {
+function SlideItem({ title, backdrop_path, overview }) {
   return (
-    <div className="relative p-5 hover:scale-[1.02] transition-all duration-300 ease-in-out ">
-      <img
-        src={`${import.meta.env.VITE_IMG_URL}${backdrop_path}`}
-        alt={title}
-        className="w-full h-[300px] object-cover rounded-md shadow-md"
-      />
-      <div className="absolute top-20 left-10 text-[25px] bg-black rounded-lg bg-opacity-55 font-bold text-white p-2">
-        {title.toUpperCase()}
+    <div className="relative p-5 hover:scale-[1.02] transition-all duration-300 ease-in-out">
+      <div className="h-[350px] relative">
+        <img
+          src={`${import.meta.env.VITE_IMG_URL}${backdrop_path}`}
+          alt={title}
+          className="min-w-full h-full object-cover rounded-md shadow-md"
+          loading="lazy"
+        />
+      </div>
+      <div className="absolute top-1/2 left-10 transform -translate-y-1/2 bg-gradient-to-r from-black via-gray-800 to-transparent rounded-lg bg-opacity-70 p-4">
+        <span className="text-white font-bold text-[20px] md:text-[25px] lg:text-[30px] tracking-wide drop-shadow-lg">
+          {title.toUpperCase()}
+        </span>
+        <p className="w-1/2 multiline-truncated">{overview}</p>
       </div>
     </div>
   );
