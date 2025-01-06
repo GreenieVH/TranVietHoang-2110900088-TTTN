@@ -28,7 +28,7 @@ export function useGetPopular() {
   useEffect(() => {
     fetchPopular();
   }, []);
-  console.log("dataPopular:", dataPopular);
+  // console.log("dataPopular:", dataPopular);
   return { dataPopular };
 }
 
@@ -53,7 +53,7 @@ export function useGetTrending() {
   useEffect(() => {
     fetchTrending();
   }, []);
-  console.log("dataTrending:", dataTrending);
+  // console.log("dataTrending:", dataTrending);
   return { dataTrending };
 }
 
@@ -105,6 +105,36 @@ export function useMoviesByGenre(genreId) {
   useEffect(() => {
     if (genreId) fetchMovies();
   }, [genreId]);
+  console.log("dataMovie:", movies);
 
   return { movies };
+}
+
+export function useMovieDetail(movieId) {
+  const [movie, setMovie] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  const fetchMovieDetail = async () => {
+    try {
+      const response = await fetch(
+        `https://api.themoviedb.org/3/movie/${movieId}?language=vi-VN`,
+        options
+      );
+      if (!response.ok) {
+        throw new Error("Failed to fetch movie details");
+      }
+      const data = await response.json();
+      setMovie(data);
+    } catch (error) {
+      console.error("Error fetching movie details:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (movieId) fetchMovieDetail();
+  }, [movieId]);
+
+  return { movie, loading };
 }

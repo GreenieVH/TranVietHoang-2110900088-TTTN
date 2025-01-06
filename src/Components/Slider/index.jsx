@@ -46,6 +46,8 @@ function Sliders() {
             title={item.title}
             backdrop_path={item.backdrop_path}
             overview={item.overview}
+            release_date={item.release_date}
+            vote_average={item.vote_average}
           />
         ))}
       </Slider>

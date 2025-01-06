@@ -13,12 +13,13 @@ function Trending() {
             <div>Loading...</div>
           ) : (
             dataTrending
-              .slice(0, 4)
+              .slice(0, 5)
               .map((item, index) => (
                 <TrendingItem
                   key={index}
                   title={item.title}
                   backdrop_path={item.poster_path}
+                  vote_average={item.vote_average}
                 />
               ))
           )}
