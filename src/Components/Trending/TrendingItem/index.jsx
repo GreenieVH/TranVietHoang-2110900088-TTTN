@@ -3,7 +3,7 @@ import { FaStar } from "react-icons/fa";
 
 function TrendingItem({ title, backdrop_path,vote_average }) {
   return (
-    <div className="relative group overflow-hidden rounded-md">
+    <div className="relative mx-3 group overflow-hidden rounded-md">
       <div className="relative">
         <img
           className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"

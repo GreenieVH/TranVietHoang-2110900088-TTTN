@@ -105,7 +105,7 @@ export function useMoviesByGenre(genreId) {
   useEffect(() => {
     if (genreId) fetchMovies();
   }, [genreId]);
-  console.log("dataMovie:", movies);
+  // console.log("dataMovie:", movies);
 
   return { movies };
 }
@@ -135,6 +135,43 @@ export function useMovieDetail(movieId) {
   useEffect(() => {
     if (movieId) fetchMovieDetail();
   }, [movieId]);
-
+  // console.log("data movie detail:", movie);
   return { movie, loading };
 }
+
+export function useMovieTrailer(movieId) {
+  const [trailerKey, setTrailerKey] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  const fetchMovieTrailer = async () => {
+    try {
+      const response = await fetch(
+        `https://api.themoviedb.org/3/movie/${movieId}/videos?language=en-US`,
+        options
+      );
+
+      if (!response.ok) throw new Error("Failed to fetch movie trailer");
+
+      const data = await response.json();
+      // console.log("Movie Trailer API Response:", data);
+
+      const trailer = data.results.find(
+        (video) => video.type === "Trailer" && video.site === "YouTube"
+      );
+      // console.log("Trailer Key Found:", trailer?.key);
+
+      setTrailerKey(trailer ? trailer.key : null);
+    } catch (error) {
+      console.error("Error fetching movie trailer:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (movieId) fetchMovieTrailer();
+  }, [movieId]);
+
+  return { trailerKey, loading };
+}
+
