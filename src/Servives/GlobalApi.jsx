@@ -83,6 +83,32 @@ export function useGenres() {
   return { genres };
 }
 
+export function useTvGenres() {
+  const [tvGenres, setTvGenres] = useState([]);
+
+  const fetchTvGenres = async () => {
+    try {
+      const response = await fetch(
+        "https://api.themoviedb.org/3/genre/tv/list?language=vi",
+        options
+      );
+      if (!response.ok) {
+        throw new Error("Failed to fetch TV genres");
+      }
+      const data = await response.json();
+      setTvGenres(data.genres || []); // Lưu danh sách thể loại TV
+    } catch (error) {
+      console.error("Error fetching TV genres:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchTvGenres();
+  }, []);
+
+  return { tvGenres };
+}
+
 export function useMoviesByGenre(genreId) {
   const [movies, setMovies] = useState([]);
 
@@ -135,7 +161,7 @@ export function useMovieDetail(movieId) {
   useEffect(() => {
     if (movieId) fetchMovieDetail();
   }, [movieId]);
-  // console.log("data movie detail:", movie);
+  console.log("data movie detail:", movie);
   return { movie, loading };
 }
 

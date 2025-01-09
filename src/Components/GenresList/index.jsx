@@ -3,7 +3,6 @@ import React from "react";
 function GenresList({ genres, onSelectGenre }) {
   return (
     <div className="p-4">
-      <h3 className="text-2xl font-bold mb-4">Tất cả</h3>
       <div className="flex flex-wrap gap-4">
         {genres.map((genre) => (
           <button

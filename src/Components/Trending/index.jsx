@@ -38,17 +38,12 @@ function Trending() {
         ) : (
           <Slider {...settings}>
             {dataTrending.map((item, index) => (
-              <Link
-                key={index}
-                to={`/movie/${item.id}`} // Điều hướng tới trang MovieDetail
-                className="block" // Đảm bảo item là một phần tử có thể click được
-              >
                 <TrendingItem
                   title={item.title}
                   backdrop_path={item.poster_path}
                   vote_average={item.vote_average}
+                  id={item.id}
                 />
-              </Link>
             ))}
           </Slider>
         )}
