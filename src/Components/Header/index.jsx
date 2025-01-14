@@ -1,30 +1,31 @@
 import React, { useState, useEffect, useRef } from "react";
-import {
-  HiHome,
-  HiMagnifyingGlass,
-  HiStar,
-  HiPlayCircle,
-  HiTv,
-} from "react-icons/hi2";
+import { useNavigate } from "react-router-dom";
+import { HiHome, HiMagnifyingGlass, HiStar, HiPlayCircle, HiTv } from "react-icons/hi2";
 import { HiPlus, HiDotsVertical } from "react-icons/hi";
-import img_user_default from "../../assets/Images/img_user_default.png";
+import { useAccountDetails } from "../../Servives/Auth";
 import HeaderItem from "./HeaderItem";
+import UserProfile from "./UserProfile"; // Import UserProfile
+import { useGenres, useTvGenres } from "../../Servives/GlobalApi";
+import GenresList from "../GenresList";
 
 function Header() {
+  const navigate = useNavigate(); // Dùng useNavigate từ React Router để điều hướng
+  const sessionId = localStorage.getItem("sessionId");
   const [toggleShowMenu, setToggleShowMenu] = useState(false);
+  const { accountDetails, loading } = useAccountDetails(sessionId);
+  const { genres } = useGenres();
+  const { tvGenres } = useTvGenres();
   const menuRef = useRef(null);
 
-  // Danh sách menu
   const menu = [
-    { name: "Trang chủ", icon: HiHome,link: '/'},
-    { name: "Tìm kiếm", icon: HiMagnifyingGlass,link: '/' },
-    { name: "WATCHLIST", icon: HiPlus,link: '/' },
-    { name: "MOVIES", icon: HiPlayCircle,link: '/movies' },
-    { name: "Thể loại", icon: HiTv,link: '/category' },
-    { name: "ORIGINALS", icon: HiStar,link: '/' },
+    { name: "Trang chủ", icon: HiHome, link: "/" },
+    { name: "Phim lẻ", icon: HiPlayCircle, link: "/movies", isGenres: true },
+    { name: "Phim Bộ", icon: HiTv, link: "/tvseries", isGenres: true },
+    { name: "Yêu thích", icon: HiStar, link: "/favoritelist" },
+    { name: "WATCHLIST", icon: HiPlus, link: "/" },
+    { name: "Tìm kiếm", icon: HiMagnifyingGlass, link: "/" },
   ];
 
-  // Đóng menu khi nhấp bên ngoài
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (menuRef.current && !menuRef.current.contains(event.target)) {
@@ -35,21 +36,41 @@ function Header() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // Render menu
+  const handleSelectGenre = (id, name) => {
+    navigate(`/tvs/${id}`);
+  };
+
+  const handleSelectGenreMovie = (id, name) => {
+    navigate(`/movies/${id}`);
+  };
+
   const renderMenu = (menuItems) =>
     menuItems.map((item, index) => (
-      <HeaderItem key={index} name={item.name} Icon={item.icon} link={item.link}/>
+      <div key={index} className="group relative">
+        <HeaderItem
+          name={item.name}
+          Icon={item.icon}
+          link={item.link}
+        />
+        {item.isGenres && (
+          <div
+            className="absolute top-full mt-2 w-[400px] md:w-[700px] bg-gray-800 p-4 rounded-md opacity-0 invisible group-hover:visible group-hover:opacity-100 transition-all duration-300 z-50"
+          >
+            {item.name === "Phim lẻ" ? (
+              <GenresList genres={genres} onSelectGenre={handleSelectGenreMovie} />
+            ) : (
+              <GenresList genres={tvGenres} onSelectGenre={handleSelectGenre} />
+            )}
+          </div>
+        )}
+      </div>
     ));
 
   return (
     <div className="sticky top-0 z-50 bg-[#0c0f1b] flex p-6 items-center justify-between">
       <div className="flex gap-8">
         <div className="w-[80px] md:w-[115px] object-cover text-white">Logo</div>
-
-        {/* Menu đầy đủ trên màn hình lớn */}
         <div className="hidden md:flex gap-8">{renderMenu(menu)}</div>
-
-        {/* Menu rút gọn trên màn hình nhỏ */}
         <div className="flex md:hidden gap-8 relative" ref={menuRef}>
           {renderMenu(menu.slice(0, 3))}
           <div
@@ -68,12 +89,7 @@ function Header() {
           </div>
         </div>
       </div>
-
-      <img
-        src={img_user_default}
-        alt="user"
-        className="w-[40px] rounded-full"
-      />
+      {accountDetails && <UserProfile accountDetails={accountDetails} />}
     </div>
   );
 }

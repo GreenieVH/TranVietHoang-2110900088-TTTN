@@ -136,6 +136,33 @@ export function useMoviesByGenre(genreId) {
   return { movies };
 }
 
+export function useTVByGenre(genreId) {
+  const [tvs, setTvs] = useState([]);
+
+  const fetchTv = async () => {
+    try {
+      const response = await fetch(
+        `https://api.themoviedb.org/3/discover/tv?with_genres=${genreId}&language=vi&page=1`,
+        options
+      );
+      if (!response.ok) {
+        throw new Error("Failed to fetch movies");
+      }
+      const data = await response.json();
+      setTvs(data.results || []);
+    } catch (error) {
+      console.error("Error fetching movies:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (genreId) fetchTv();
+  }, [genreId]);
+  // console.log("dataMovie:", movies);
+
+  return { tvs };
+}
+
 export function useMovieDetail(movieId) {
   const [movie, setMovie] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -163,6 +190,35 @@ export function useMovieDetail(movieId) {
   }, [movieId]);
   console.log("data movie detail:", movie);
   return { movie, loading };
+}
+
+export function useTvDetail(movieId) {
+  const [tv, setTv] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  const fetchTvDetail = async () => {
+    try {
+      const response = await fetch(
+        `https://api.themoviedb.org/3/tv/${movieId}?language=vi-VN`,
+        options
+      );
+      if (!response.ok) {
+        throw new Error("Failed to fetch movie details");
+      }
+      const data = await response.json();
+      setTv(data);
+    } catch (error) {
+      console.error("Error fetching movie details:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (movieId) fetchTvDetail();
+  }, [movieId]);
+  console.log("data tv detail:", tv);
+  return { tv, loading };
 }
 
 export function useMovieTrailer(movieId) {
@@ -201,3 +257,38 @@ export function useMovieTrailer(movieId) {
   return { trailerKey, loading };
 }
 
+export function useTvTrailer(tvId) {
+  const [trailerKey, setTrailerKey] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  const fetchTvTrailer = async () => {
+    try {
+      const response = await fetch(
+        `https://api.themoviedb.org/3/tv/${tvId}/videos?language=en-US`,
+        options // Đảm bảo bạn có đối tượng `options` bao gồm `api_key` ở đây
+      );
+
+      if (!response.ok) throw new Error("Failed to fetch TV trailer");
+
+      const data = await response.json();
+      // console.log("TV Trailer API Response:", data);
+
+      const trailer = data.results.find(
+        (video) => video.type === "Trailer" && video.site === "YouTube"
+      );
+      // console.log("Trailer Key Found:", trailer?.key);
+
+      setTrailerKey(trailer ? trailer.key : null);
+    } catch (error) {
+      console.error("Error fetching TV trailer:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (tvId) fetchTvTrailer();
+  }, [tvId]);
+
+  return { trailerKey, loading };
+}
