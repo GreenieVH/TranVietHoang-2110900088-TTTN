@@ -31,7 +31,7 @@ function Trending() {
 
   return (
     <div>
-      <h3 className="text-[1.5rem] font-bold my-2">Trending</h3>
+      <h3 className="text-2xl font-bold my-2 px-4">Trending</h3>
       <div>
         {!dataTrending ? (
           <div>Loading...</div>

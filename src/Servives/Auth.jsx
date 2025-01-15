@@ -131,7 +131,12 @@ export function useAccountDetails(sessionId) {
   return { accountDetails, loading, error };
 }
 
-export function useFavoriteList(accountId, sessionId, type = "movies", page = 1) {
+export function useFavoriteList(
+  accountId,
+  sessionId,
+  type = "movies",
+  page = 1
+) {
   const [favorites, setFavorites] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -143,7 +148,10 @@ export function useFavoriteList(accountId, sessionId, type = "movies", page = 1)
 
       try {
         const response = await fetch(
-          `https://api.themoviedb.org/3/account/${accountId}/favorite/${type}?api_key=${import.meta.env.VITE_API_KEY}&session_id=${sessionId}&page=${page}`,options
+          `https://api.themoviedb.org/3/account/${accountId}/favorite/${type}?api_key=${
+            import.meta.env.VITE_API_KEY
+          }&session_id=${sessionId}&page=${page}`,
+          options
         );
 
         if (!response.ok) {
@@ -163,6 +171,83 @@ export function useFavoriteList(accountId, sessionId, type = "movies", page = 1)
       fetchFavorites();
     }
   }, [accountId, sessionId, type, page]);
-
+  // console.log(favorites)
   return { favorites, loading, error };
 }
+
+export const useFavoriteMovies = (sessionId, accountId) => {
+  const [error,setError] = useState()
+  const [favorites, setFavorites] = useState(new Set());
+
+  // Kiểm tra danh sách yêu thích từ localStorage khi component mount
+  useEffect(() => {
+    const storedFavorites = JSON.parse(localStorage.getItem("favorites")) || [];
+    setFavorites(new Set(storedFavorites));
+  }, []);
+
+  const handleFavoriteToggle = async (movieId) => {
+    const isFavorite = favorites.has(movieId);
+
+    try {
+      // Gửi request tới TMDB API để thêm hoặc xóa khỏi yêu thích
+      const response = await fetch(
+        `https://api.themoviedb.org/3/account/${accountId}/favorite?api_key=${
+          import.meta.env.VITE_API_KEY
+        }&session_id=${sessionId}`,
+        {
+          method: "POST",
+          headers: {
+            accept: "application/json",
+            Authorization: `Bearer ${import.meta.env.VITE_API_KEY}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            media_type: "movie",
+            media_id: movieId,
+            favorite: !isFavorite, // Nếu đã yêu thích thì xóa, ngược lại thêm vào
+          }),
+        }
+      );
+      const data = await response.json();
+
+      if (data.status_code === 1) {
+        setFavorites((prevFavorites) => {
+          const newFavorites = new Set(prevFavorites);
+          if (isFavorite) {
+            newFavorites.delete(movieId); // Xóa khỏi yêu thích
+          } else {
+            newFavorites.add(movieId); // Thêm vào yêu thích
+          }
+          localStorage.setItem(
+            "favorites",
+            JSON.stringify(Array.from(newFavorites))
+          );
+          return newFavorites;
+        });
+      } else if (
+        data.status_message === "The item/record was deleted successfully."
+      ) {
+        // Xử lý khi xóa thành công (thông báo này xuất hiện khi bạn xóa khỏi yêu thích)
+        setFavorites((prevFavorites) => {
+          const newFavorites = new Set(prevFavorites);
+          newFavorites.delete(movieId); // Xóa khỏi danh sách yêu thích
+          localStorage.setItem(
+            "favorites",
+            JSON.stringify(Array.from(newFavorites))
+          ); // Cập nhật localStorage
+          return newFavorites;
+        });
+      } else {
+        setError(data.status_message || "Có lỗi xảy ra.");
+        console.error("Lỗi khi xử lý yêu thích:", data.status_message);
+      }
+    } catch (error) {
+      console.error("Có lỗi khi gửi yêu cầu:", error);
+    }
+  };
+
+  return {
+    favorites,
+    handleFavoriteToggle,
+  };
+};

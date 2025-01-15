@@ -2,6 +2,7 @@ import React from 'react'
 import Sliders from '../../Components/Slider'
 import Trending from '../../Components/Trending'
 import Production from '../../Components/Production'
+import PopularMovies from '../../Components/PopularMovies'
 
 function Home() {
   return (
@@ -10,6 +11,7 @@ function Home() {
       <Sliders/>
       <Trending/>
       <Production/>
+      <PopularMovies/>
     </div>
   )
 }

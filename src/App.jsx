@@ -8,6 +8,7 @@ import Login from "./Pages/Login";
 import TvSerie from "./Pages/TvSerie";
 import TvDetail from "./Components/TvDetail";
 import FavoriteList from "./Pages/FavoriteList";
+import SearchResults from "./Components/SearchResults";
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
           <Route path="/movie/:id" element={<MainLayout><MovieDetail/></MainLayout>} />
           <Route path="/tvserie/:id" element={<MainLayout><TvDetail/></MainLayout>} />
           <Route path="/favoritelist" element={<MainLayout><FavoriteList/></MainLayout>} />
+          <Route path="/search-results" element={<MainLayout><SearchResults/></MainLayout>} />
           <Route path="/login" element={<Login/>} />
         </Routes>
       </BrowserRouter>

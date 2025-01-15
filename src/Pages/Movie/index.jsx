@@ -22,7 +22,6 @@ function Movies() {
 
   return (
     <div className="px-16">
-      <h3 className="text-2xl font-bold mb-4">{genreName}</h3>
       {selectedGenre && <MoviesByGenre selectedGenre={selectedGenre} genreName={genreName} />}
     </div>
   );

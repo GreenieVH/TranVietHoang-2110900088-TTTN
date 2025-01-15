@@ -45,3 +45,30 @@
   -webkit-box-orient: vertical; /* Đặt hướng là dọc */
   overflow: hidden;            /* Ẩn phần nội dung vượt quá */
 }
+
+/* Thêm phần tử cuộn với background */
+.scroll-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow-x: auto;
+  gap: 16px;
+  padding: 12px 0;
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
+  scrollbar-color: #1f571a transparent;
+  transition: background-image 0.5s ease; /* Thêm hiệu ứng cho background */
+  background-size: cover;
+  background-position: center;
+}
+
+.scroll-container .movie-item {
+  position: relative;
+  min-width: 200px;
+}
+
+/* Khi hover vào item, thay đổi background của .scroll-container */
+.scroll-container .movie-item:hover {
+  background-image: var(--movie-backdrop); /* Dùng backdrop_path của movie */
+}
+

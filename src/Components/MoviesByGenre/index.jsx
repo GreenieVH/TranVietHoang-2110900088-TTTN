@@ -2,11 +2,19 @@ import React from "react";
 import { useMoviesByGenre } from "../../Servives/GlobalApi";
 import { FaStar } from "react-icons/fa";
 import { HiOutlinePlayCircle } from "react-icons/hi2";
+import { HiHeart, HiOutlineHeart } from "react-icons/hi";
 import { useNavigate } from "react-router-dom";
+import { useAccountDetails, useFavoriteMovies } from "../../Servives/Auth";
 
 function MoviesByGenre({ selectedGenre, genreName }) {
+  const sessionId = localStorage.getItem("sessionId");
+  const { accountDetails } = useAccountDetails(sessionId);
   const { movies } = useMoviesByGenre(selectedGenre); // Fetch phim theo genre đã chọn
   const navigate = useNavigate(); // Dùng để điều hướng đến chi tiết phim
+  const { favorites, handleFavoriteToggle } = useFavoriteMovies(
+    sessionId,
+    accountDetails?.id
+  );
 
   return (
     <div className="p-4">
@@ -46,6 +54,18 @@ function MoviesByGenre({ selectedGenre, genreName }) {
               </div>
               <h4 className="font-bold">{movie.title}</h4>
               <p>Lượt xem: {movie.popularity}</p>
+              
+              {/* Icon yêu thích */}
+              <div
+                className="absolute top-2 right-2 text-white cursor-pointer"
+                onClick={() => handleFavoriteToggle(movie.id)}
+              >
+                {favorites.has(movie.id) ? (
+                  <HiHeart className="text-red-500 text-3xl" />
+                ) : (
+                  <HiOutlineHeart className="text-red-500 text-3xl" />
+                )}
+              </div>
             </div>
           ))
         )}

@@ -292,3 +292,35 @@ export function useTvTrailer(tvId) {
 
   return { trailerKey, loading };
 }
+
+export function useSearch() {
+  const [searchResults, setSearchResults] = useState([]);
+  const [isSearching, setIsSearching] = useState(false);
+  const [error, setError] = useState(null);
+
+  const search = async (query) => {
+    if (!query.trim()) return;
+
+    setIsSearching(true);
+    setError(null);
+
+    try {
+      const response = await fetch(
+        `https://api.themoviedb.org/3/search/multi?query=${encodeURIComponent(query)}&language=vi-VN`,
+        options
+      );
+
+      if (!response.ok) throw new Error("Failed to fetch search results");
+
+      const data = await response.json();
+      setSearchResults(data.results || []);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setIsSearching(false);
+    }
+  };
+  // console.log(searchResults)
+  return { searchResults, isSearching, error, search };
+};
+
