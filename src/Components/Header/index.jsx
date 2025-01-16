@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useGenres, useSearch, useTvGenres } from "../../Servives/GlobalApi";
 import {
   HiHome,
@@ -11,6 +11,7 @@ import {
 import { HiPlus, HiDotsVertical, HiMenu, HiX } from "react-icons/hi";
 import { useAccountDetails } from "../../Servives/Auth";
 import logo from "../../assets/Images/logo-gm.png";
+import img_user_default from "../../assets/Images/img_user_default.png";
 import HeaderItem from "./HeaderItem";
 import UserProfile from "./UserProfile";
 import GenresList from "../GenresList";
@@ -54,6 +55,16 @@ function Header() {
   const handleSearchSubmit = () => {
     if (searchTerm) {
       navigate(`/search-results?query=${searchTerm}`); // Chuyển hướng đến trang kết quả tìm kiếm
+    }
+  };
+
+  const handleItemClick = (item) => {
+    if (item.media_type === "movie") {
+      navigate(`/movie/${item.id}`); // Điều hướng đến component Movie
+    } else if (item.media_type === "tv") {
+      navigate(`/tvserie/${item.id}`); // Điều hướng đến component TV Series
+    } else {
+      console.error("Unknown media type:", item.media_type);
     }
   };
 
@@ -118,9 +129,9 @@ function Header() {
           value={searchTerm}
           onChange={(e) => {
             setSearchTerm(e.target.value);
-            setIsSearchResultsVisible(true); 
+            setIsSearchResultsVisible(true);
             if (e.target.value.trim()) {
-              search(e.target.value);  // Gọi hàm tìm kiếm ngay khi nhập
+              search(e.target.value); // Gọi hàm tìm kiếm ngay khi nhập
             }
           }}
         />
@@ -140,16 +151,38 @@ function Header() {
             {searchResults.map((result) => (
               <li
                 key={result.id}
-                className="px-4 py-2 hover:bg-gray-700 cursor-pointer"
-                onClick={() => navigate(`/tvserie/${result.id}`)} // Điều hướng đến chi tiết phim/tv khi click
+                className="px-4 py-2 hover:bg-gray-700 cursor-pointer flex"
+                onClick={() => handleItemClick(result)} // Điều hướng đến chi tiết phim/tv khi click
               >
-                {result.title || result.name}
+                <img
+                  src={`${import.meta.env.VITE_IMGS_URL}/${result.poster_path}`}
+                  alt={result.title || result.name || "No title"}
+                  className="w-16 h-24 object-cover rounded-md"
+                />
+                <div className="ml-4">
+                  <p>{result.title || result.name}</p>
+                  <p>
+                    Thể loại:{" "}
+                    {result.media_type === "tv" ? "TV Serie" : "Movie"}
+                  </p>
+                </div>
               </li>
             ))}
           </ul>
         )}
       </div>
-
+      {!accountDetails && <div className="group relative">
+        <img
+          src={img_user_default}
+          alt="user"
+          className="w-[40px] h-[40px] rounded-full cursor-pointer border-2 border-gray-300"
+        />
+        <div className="absolute right-0 top-full mt-2 p-2 bg-gray-800 text-white rounded-md opacity-0 invisible group-hover:visible group-hover:opacity-100 transition-all duration-300 z-20 w-max">
+          <p className="cursor-pointer font-semibold whitespace-nowrap">
+            <Link to="/login" className="text-white hover:text-green-500">Đăng nhập</Link>
+          </p>
+        </div>
+      </div>}
       {accountDetails && <UserProfile accountDetails={accountDetails} />}
     </div>
   );

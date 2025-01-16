@@ -10,8 +10,8 @@ function Home() {
 
       <Sliders/>
       <Trending/>
-      <Production/>
       <PopularMovies/>
+      <Production/>
     </div>
   )
 }

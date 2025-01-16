@@ -4,11 +4,18 @@ import SlideItem from "./SlideItem";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
+import { TailSpin } from "react-loader-spinner";
 
 
 function Sliders() {
-  const { dataPopular } = useGetPopular();
+  const { dataPopular,loading } = useGetPopular();
 
+  if (loading)
+      return (
+        <div className="flex justify-center items-center h-screen">
+          <TailSpin height="80" width="80" color="#4A90E2" />
+        </div>
+      );
   const settings = {
     dots: true,
     infinite: true,
@@ -21,7 +28,7 @@ function Sliders() {
   };
 
   return (
-    <div className="mb-5">
+    <div className="mb-5 relative z-10">
     {!dataPopular ? (
       <div>Loading...</div>
     ) : (

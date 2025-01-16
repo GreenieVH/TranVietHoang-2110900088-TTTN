@@ -1,13 +1,25 @@
 import React from "react";
 import { useAccountDetails, useFavoriteList } from "../../Servives/Auth";
+import { TailSpin } from "react-loader-spinner";
 
 function FavoriteList() {
   const sessionId = localStorage.getItem("sessionId");
-  const { accountDetails, loading:loadingAccount } = useAccountDetails(sessionId);
+  const { accountDetails, loading: loadingAccount } =
+    useAccountDetails(sessionId);
 
-  const { favorites, loading, error } = useFavoriteList(accountDetails?.id, sessionId, "movies");
+  const { favorites, loading, error } = useFavoriteList(
+    accountDetails?.id,
+    sessionId,
+    "movies"
+  );
 
-  if (loading || loadingAccount) return <div>Loading...</div>;
+  if (loading || loadingAccount)
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <TailSpin height="80" width="80" color="#4A90E2" />
+      </div>
+    );
+    
   if (error) return <div>Error: {error}</div>;
 
   return (
@@ -21,7 +33,7 @@ function FavoriteList() {
               alt={item.title}
               style={{ width: "100px", height: "150px" }}
             />
-            <p>{item.title}</p>
+            <p>{item.title || item.name}</p>
           </li>
         ))}
       </ul>

@@ -1,12 +1,20 @@
 import React from "react";
 import { FaStar } from "react-icons/fa";
-import { HiOutlinePlayCircle } from "react-icons/hi2";
+import { HiHeart, HiOutlineHeart, HiOutlinePlayCircle } from "react-icons/hi2";
 import { useNavigate } from "react-router-dom";
 import { useTVByGenre } from "../../Servives/GlobalApi";
+import { useAccountDetails, useFavoriteMovies } from "../../Servives/Auth";
 
 function TvByGrenre({ selectedGenre, genreName }) {
+  const sessionId = localStorage.getItem("sessionId");
+  const { accountDetails } = useAccountDetails(sessionId);
   const { tvs } = useTVByGenre(selectedGenre);
   const navigate = useNavigate();
+  const { favorites, handleFavoriteToggle } = useFavoriteMovies(
+    sessionId,
+    accountDetails?.id,
+    "tv"
+  );
 
   return (
     <div className="p-4">
@@ -46,6 +54,17 @@ function TvByGrenre({ selectedGenre, genreName }) {
               </div>
               <h4 className="font-bold">{tv.name}</h4>
               <p>Lượt xem: {tv.popularity}</p>
+              {/* Icon yêu thích */}
+              <div
+                className="absolute top-2 right-2 text-white cursor-pointer"
+                onClick={() => handleFavoriteToggle(tv.id)}
+              >
+                {favorites.has(tv.id) ? (
+                  <HiHeart className="text-red-500 text-3xl" />
+                ) : (
+                  <HiOutlineHeart className="text-red-500 text-3xl" />
+                )}
+              </div>
             </div>
           ))
         )}

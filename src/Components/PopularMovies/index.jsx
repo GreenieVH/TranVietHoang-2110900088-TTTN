@@ -5,6 +5,7 @@ import { HiOutlinePlayCircle } from "react-icons/hi2";
 import { HiHeart, HiOutlineHeart } from "react-icons/hi";
 import { useAccountDetails, useFavoriteMovies } from "../../Servives/Auth";
 import { useGetPopular } from "../../Servives/GlobalApi";
+import { Rating } from "./Rating";
 
 function PopularMovies() {
   const sessionId = localStorage.getItem("sessionId");
@@ -54,12 +55,13 @@ function PopularMovies() {
       <div
         className="absolute inset-0 bg-[#131520] opacity-50" // Tạo lớp phủ màu tím với độ trong suốt
         style={{
-          position: "absolute",
+          position: "fixed",
           top: 0,
           left: 0,
           right: 0,
           bottom: 0,
           backgroundColor: "#131520",
+          zIndex: 1,
         }}
       ></div>
       <h3 className="text-2xl font-bold my-2 px-4 z-30">What's Popular</h3>
@@ -74,19 +76,13 @@ function PopularMovies() {
             onMouseEnter={() => handleMouseEnter(movie.backdrop_path)} // Hover vào item để thay đổi background
             onMouseLeave={handleMouseLeave} // Khi rời khỏi item, quay lại ảnh nền ban đầu
           >
-            <div className="relative group overflow-hidden">
+            <div className="relative group overflow-hidden mb-3">
               <img
-                src={`${import.meta.env.VITE_IMG_URL}${movie.poster_path}`}
+                src={`${import.meta.env.VITE_IMGS_URL}${movie.poster_path}`}
                 alt={movie.title}
-                className="w-full h-[250px] object-cover rounded-md mb-2 transition-transform duration-300 ease-in-out group-hover:scale-105"
+                className="w-full h-[250px] object-cover rounded-md transition-transform duration-300 ease-in-out group-hover:scale-105"
               />
-              {/* Điểm đánh giá */}
-              <div className="absolute top-2 left-2 bg-black bg-opacity-70 text-yellow-400 flex items-center gap-1 px-2 py-1 rounded-md shadow-md">
-                <FaStar />
-                <span className="text-sm font-semibold">
-                  {movie.vote_average.toFixed(1)}
-                </span>
-              </div>
+              
               {/* Nút Play */}
               <div
                 className="absolute inset-0 flex justify-center items-center bg-black bg-opacity-30 opacity-0 group-hover:opacity-100 transition-opacity duration-300 cursor-pointer"
@@ -95,6 +91,10 @@ function PopularMovies() {
                 <HiOutlinePlayCircle className="text-white text-5xl" />
               </div>
             </div>
+            {/* Điểm đánh giá */}
+            <div className="absolute z-50 bottom-[50px] left-4 w-9 h-9 bg-black flex items-center justify-center rounded-full ">
+                <Rating score={movie.vote_average} />
+              </div>
             <h4 className="font-bold truncate">{movie.title}</h4>
             <p>Lượt xem: {movie.popularity}</p>
 

@@ -40,7 +40,7 @@ function Production() {
     },
   ];
   return (
-    <div className="flex gap-2 md:gap-5 p-2 px-5 md:px-8 mt-8">
+    <div className="relative z-10 flex gap-2 md:gap-5 p-2 px-5 md:px-8 mt-8">
       {productionHouseList.map((item) => (
         <div
           className="border-[2px] border-gray-600

@@ -82,6 +82,7 @@ export function useTMDBAuth() {
   };
 
   return {
+    error,
     requestToken,
     sessionId,
     loading,
@@ -131,12 +132,7 @@ export function useAccountDetails(sessionId) {
   return { accountDetails, loading, error };
 }
 
-export function useFavoriteList(
-  accountId,
-  sessionId,
-  type = "movies",
-  page = 1
-) {
+export function useFavoriteList(accountId, sessionId, page = 1) {
   const [favorites, setFavorites] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -147,19 +143,38 @@ export function useFavoriteList(
       setError(null);
 
       try {
-        const response = await fetch(
-          `https://api.themoviedb.org/3/account/${accountId}/favorite/${type}?api_key=${
+        // Đảm bảo page luôn là số nguyên hợp lệ
+        const validPage = isNaN(page) || page < 1 || page > 500 ? 1 : Math.floor(page);
+
+        // Fetch movies
+        const movieResponse = await fetch(
+          `https://api.themoviedb.org/3/account/${accountId}/favorite/movies?api_key=${
             import.meta.env.VITE_API_KEY
-          }&session_id=${sessionId}&page=${page}`,
-          options
+          }&session_id=${sessionId}&page=${validPage}&language=vi`,options
         );
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch favorite list");
+        if (!movieResponse.ok) {
+          throw new Error("Failed to fetch favorite movies");
         }
+        const movieData = await movieResponse.json();
 
-        const data = await response.json();
-        setFavorites(data.results || []);
+        // Fetch TV shows
+        const tvResponse = await fetch(
+          `https://api.themoviedb.org/3/account/${accountId}/favorite/tv?api_key=${
+            import.meta.env.VITE_API_KEY
+          }&session_id=${sessionId}&page=${validPage}&language=vi`,options
+        );
+        if (!tvResponse.ok) {
+          throw new Error("Failed to fetch favorite TV shows");
+        }
+        const tvData = await tvResponse.json();
+
+        // Merge results
+        const mergedFavorites = [
+          ...(movieData.results || []).map((item) => ({ ...item, media_type: "movie" })),
+          ...(tvData.results || []).map((item) => ({ ...item, media_type: "tv" })),
+        ];
+
+        setFavorites(mergedFavorites);
       } catch (err) {
         setError(err.message);
       } finally {
@@ -170,12 +185,12 @@ export function useFavoriteList(
     if (accountId && sessionId) {
       fetchFavorites();
     }
-  }, [accountId, sessionId, type, page]);
-  // console.log(favorites)
+  }, [accountId, sessionId, page]);
+
   return { favorites, loading, error };
 }
 
-export const useFavoriteMovies = (sessionId, accountId) => {
+export const useFavoriteMovies = (sessionId, accountId,mediaType = "movie") => {
   const [error,setError] = useState()
   const [favorites, setFavorites] = useState(new Set());
 
@@ -202,7 +217,7 @@ export const useFavoriteMovies = (sessionId, accountId) => {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            media_type: "movie",
+            media_type: mediaType,
             media_id: movieId,
             favorite: !isFavorite, // Nếu đã yêu thích thì xóa, ngược lại thêm vào
           }),

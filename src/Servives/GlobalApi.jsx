@@ -10,9 +10,12 @@ const options = {
 
 export function useGetPopular() {
   const [dataPopular, setDataPopular] = useState([]);
+  const [loading, setLoading] = useState(true);
   const url = "https://api.themoviedb.org/3/movie/popular?language=vi&page=1";
 
   const fetchPopular = async () => {
+    setLoading(true);
+
     try {
       const response = await fetch(url, options);
       if (!response.ok) {
@@ -22,6 +25,8 @@ export function useGetPopular() {
       setDataPopular(data.results || []);
     } catch (error) {
       console.log(error);
+    }finally {
+      setLoading(false);
     }
   };
 
@@ -29,15 +34,18 @@ export function useGetPopular() {
     fetchPopular();
   }, []);
   // console.log("dataPopular:", dataPopular);
-  return { dataPopular };
+  return { dataPopular,loading };
 }
 
 export function useGetTrending() {
   const [dataTrending, setDataTrending] = useState([]);
+  const [loading, setLoading] = useState(true);
+
   const url =
     "https://api.themoviedb.org/3/trending/movie/week?language=vi&page=1";
 
   const fetchTrending = async () => {
+    setLoading(true)
     try {
       const response = await fetch(url, options);
       if (!response.ok) {
@@ -47,6 +55,8 @@ export function useGetTrending() {
       setDataTrending(data.results || []);
     } catch (error) {
       console.log(error);
+    }finally {
+      setLoading(false);
     }
   };
 
@@ -54,7 +64,7 @@ export function useGetTrending() {
     fetchTrending();
   }, []);
   // console.log("dataTrending:", dataTrending);
-  return { dataTrending };
+  return { dataTrending,loading };
 }
 
 export function useGenres() {
@@ -313,7 +323,12 @@ export function useSearch() {
       if (!response.ok) throw new Error("Failed to fetch search results");
 
       const data = await response.json();
-      setSearchResults(data.results || []);
+      // Lọc bỏ các kết quả có `media_type` là `person`
+      const filteredResults = (data.results || []).filter(
+        (item) => item.media_type !== "person"
+      );
+
+      setSearchResults(filteredResults || []);
     } catch (err) {
       setError(err.message);
     } finally {

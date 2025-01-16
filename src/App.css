@@ -56,10 +56,11 @@
   padding: 12px 0;
   scroll-behavior: smooth;
   scrollbar-width: thin;
-  scrollbar-color: #1f571a transparent;
+  scrollbar-color: #21f00e transparent;
   transition: background-image 0.5s ease; /* Thêm hiệu ứng cho background */
   background-size: cover;
   background-position: center;
+  z-index: 2;
 }
 
 .scroll-container .movie-item {

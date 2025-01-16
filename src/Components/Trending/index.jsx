@@ -3,9 +3,18 @@ import { useGetTrending } from "../../Servives/GlobalApi";
 import TrendingItem from "./TrendingItem";
 import Slider from "react-slick";
 import { Link } from "react-router-dom"; // Import Link để điều hướng
+import { motion } from "framer-motion";
+import { TailSpin } from "react-loader-spinner";
 
 function Trending() {
-  const { dataTrending } = useGetTrending();
+  const { dataTrending,loading } = useGetTrending();
+
+  if (loading)
+      return (
+        <div className="flex justify-center items-center h-screen">
+          <TailSpin height="80" width="80" color="#4A90E2" />
+        </div>
+      );
 
   const settings = {
     infinite: true, 
@@ -30,8 +39,8 @@ function Trending() {
   };
 
   return (
-    <div>
-      <h3 className="text-2xl font-bold my-2 px-4">Trending</h3>
+    <div className="relative z-10 ">
+      <h3 className="text-2xl font-bold my-2 px-4 py-4">Trending</h3>
       <div>
         {!dataTrending ? (
           <div>Loading...</div>
