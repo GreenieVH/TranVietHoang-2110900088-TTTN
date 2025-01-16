@@ -5,7 +5,7 @@ import { HiOutlinePlayCircle } from "react-icons/hi2";
 import { HiHeart, HiOutlineHeart } from "react-icons/hi";
 import { useAccountDetails, useFavoriteMovies } from "../../Servives/Auth";
 import { useGetPopular } from "../../Servives/GlobalApi";
-import { Rating } from "./Rating";
+import { Rating } from "../Rating";
 
 function PopularMovies() {
   const sessionId = localStorage.getItem("sessionId");

@@ -133,7 +133,8 @@ export function useAccountDetails(sessionId) {
 }
 
 export function useFavoriteList(accountId, sessionId, page = 1) {
-  const [favorites, setFavorites] = useState([]);
+  const [movies, setMovies] = useState([]);
+  const [tvShows, setTvShows] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -143,7 +144,6 @@ export function useFavoriteList(accountId, sessionId, page = 1) {
       setError(null);
 
       try {
-        // Đảm bảo page luôn là số nguyên hợp lệ
         const validPage = isNaN(page) || page < 1 || page > 500 ? 1 : Math.floor(page);
 
         // Fetch movies
@@ -156,6 +156,7 @@ export function useFavoriteList(accountId, sessionId, page = 1) {
           throw new Error("Failed to fetch favorite movies");
         }
         const movieData = await movieResponse.json();
+        setMovies(movieData.results || []);
 
         // Fetch TV shows
         const tvResponse = await fetch(
@@ -167,14 +168,7 @@ export function useFavoriteList(accountId, sessionId, page = 1) {
           throw new Error("Failed to fetch favorite TV shows");
         }
         const tvData = await tvResponse.json();
-
-        // Merge results
-        const mergedFavorites = [
-          ...(movieData.results || []).map((item) => ({ ...item, media_type: "movie" })),
-          ...(tvData.results || []).map((item) => ({ ...item, media_type: "tv" })),
-        ];
-
-        setFavorites(mergedFavorites);
+        setTvShows(tvData.results || []);
       } catch (err) {
         setError(err.message);
       } finally {
@@ -187,10 +181,11 @@ export function useFavoriteList(accountId, sessionId, page = 1) {
     }
   }, [accountId, sessionId, page]);
 
-  return { favorites, loading, error };
+  return { movies, tvShows, loading, error };
 }
 
-export const useFavoriteMovies = (sessionId, accountId,mediaType = "movie") => {
+
+export const useFavoriteMovies = (sessionId, accountId) => {
   const [error,setError] = useState()
   const [favorites, setFavorites] = useState(new Set());
 
@@ -200,7 +195,7 @@ export const useFavoriteMovies = (sessionId, accountId,mediaType = "movie") => {
     setFavorites(new Set(storedFavorites));
   }, []);
 
-  const handleFavoriteToggle = async (movieId) => {
+  const handleFavoriteToggle = async (movieId,mediaType = "movie") => {
     const isFavorite = favorites.has(movieId);
 
     try {

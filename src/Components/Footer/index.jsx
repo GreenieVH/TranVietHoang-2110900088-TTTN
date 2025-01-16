@@ -1,6 +1,6 @@
 import React from "react";
 import logo from "../../assets/Images/logo-gm.png"; // Đảm bảo bạn có một ảnh logo trong thư mục assets
-
+import {Link} from "react-router-dom"
 const Footer = () => {
   return (
     <footer className="relative mt-10 bg-gray-800 text-white py-8 z-50">
@@ -8,9 +8,9 @@ const Footer = () => {
         {/* Cột 1: Logo và Button */}
         <div className="flex flex-col items-start">
           <img src={logo} alt="Logo" className="w-32 mb-4" />
-          <button className="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition">
+          <Link to="/login" className="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition">
             Đăng ký
-          </button>
+          </Link>
         </div>
 
         {/* Cột 2: Khái niệm cơ bản */}

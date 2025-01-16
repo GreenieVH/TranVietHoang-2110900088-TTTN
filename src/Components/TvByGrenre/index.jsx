@@ -53,7 +53,18 @@ function TvByGrenre({ selectedGenre, genreName }) {
                 </div>
               </div>
               <h4 className="font-bold">{tv.name}</h4>
-              <p>Lượt xem: {tv.popularity}</p>
+              <p className="text-gray-500">
+                    {tv.first_air_date
+                      ? new Date(tv.first_air_date).toLocaleDateString(
+                          "vi-VN",
+                          {
+                            year: "numeric",
+                            month: "long",
+                            day: "numeric",
+                          }
+                        )
+                      : "N/A"}
+                  </p>
               {/* Icon yêu thích */}
               <div
                 className="absolute top-2 right-2 text-white cursor-pointer"
