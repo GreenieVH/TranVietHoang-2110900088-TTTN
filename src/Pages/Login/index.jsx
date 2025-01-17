@@ -39,7 +39,7 @@ const Login = () => {
   return (
     <>
       <section
-        className="h-full w-full bg-neutral-200 dark:bg-neutral-700"
+        className="h-full w-full bg-neutral-200 dark:bg-neutral-700 max-w-screen-2xl mx-auto"
         style={{
           backgroundImage: `url(${bg_kuku})`,
           backgroundSize: "cover",

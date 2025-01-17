@@ -339,3 +339,31 @@ export function useSearch() {
   return { searchResults, isSearching, error, search };
 };
 
+export function useMovieCredits(movie_id) {
+  const [movieCredits, setMovieCredits] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const url = `https://api.themoviedb.org/3/movie/${movie_id}/credits`;
+
+  const fetchMovieCredits = async () => {
+    setLoading(true);
+
+    try {
+      const response = await fetch(url, options);
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const data = await response.json();
+      setMovieCredits(data || []);
+    } catch (error) {
+      console.log(error);
+    }finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchMovieCredits();
+  }, []);
+  console.log("MovieCredits:", movieCredits);
+  return { movieCredits,loading };
+}

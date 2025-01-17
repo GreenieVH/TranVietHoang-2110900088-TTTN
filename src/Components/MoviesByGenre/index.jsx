@@ -53,7 +53,18 @@ function MoviesByGenre({ selectedGenre, genreName }) {
                 </div>
               </div>
               <h4 className="font-bold">{movie.title}</h4>
-              <p>Lượt xem: {movie.popularity}</p>
+              <p className="text-gray-500">
+                    {movie.release_date
+                      ? new Date(movie.release_date).toLocaleDateString(
+                          "vi-VN",
+                          {
+                            year: "numeric",
+                            month: "long",
+                            day: "numeric",
+                          }
+                        )
+                      : "N/A"}
+                  </p>
               
               {/* Icon yêu thích */}
               <div

@@ -137,7 +137,7 @@ function Header() {
         />
         <button
           onClick={handleSearchSubmit} // Chuyển hướng khi nhấn tìm kiếm
-          className="absolute right-2 top-1/2 transform -translate-y-1/2 text-black focus:outline-none"
+          className="absolute right-2 top-1/2 h-10 transform -translate-y-1/2 text-black focus:outline-none"
         >
           <HiMagnifyingGlass size={20} />
         </button>
@@ -171,13 +171,8 @@ function Header() {
           </ul>
         )}
       </div>
-      {!accountDetails && <div className="group relative">
-        <img
-          src={img_user_default}
-          alt="user"
-          className="w-[40px] h-[40px] rounded-full cursor-pointer border-2 border-gray-300"
-        />
-        <div className="absolute right-0 top-full mt-2 p-2 bg-gray-800 text-white rounded-md opacity-0 invisible group-hover:visible group-hover:opacity-100 transition-all duration-300 z-20 w-max">
+      {!accountDetails && <div className="">
+        <div className="p-2 bg-gray-800 text-white rounded-md transition-all duration-300 z-20 w-max">
           <p className="cursor-pointer font-semibold whitespace-nowrap">
             <Link to="/login" className="text-white hover:text-green-500">Đăng nhập</Link>
           </p>

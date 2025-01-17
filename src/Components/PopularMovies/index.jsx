@@ -82,7 +82,7 @@ function PopularMovies() {
                 alt={movie.title}
                 className="w-full h-[250px] object-cover rounded-md transition-transform duration-300 ease-in-out group-hover:scale-105"
               />
-              
+
               {/* Nút Play */}
               <div
                 className="absolute inset-0 flex justify-center items-center bg-black bg-opacity-30 opacity-0 group-hover:opacity-100 transition-opacity duration-300 cursor-pointer"
@@ -92,11 +92,19 @@ function PopularMovies() {
               </div>
             </div>
             {/* Điểm đánh giá */}
-            <div className="absolute z-50 bottom-[50px] left-4 w-9 h-9 bg-black flex items-center justify-center rounded-full ">
-                <Rating score={movie.vote_average} />
-              </div>
+            <div className="absolute z-10 bottom-[50px] left-4 size-10 bg-[#131520] flex items-center justify-center rounded-full ">
+              <Rating score={movie.vote_average} strokew="0.6rem" r={40}/>
+            </div>
             <h4 className="font-bold truncate">{movie.title}</h4>
-            <p>Lượt xem: {movie.popularity}</p>
+            <p className="text-gray-100">
+              {movie.release_date
+                ? new Date(movie.release_date).toLocaleDateString("vi-VN", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  })
+                : "N/A"}
+            </p>
 
             {/* Icon yêu thích */}
             <div

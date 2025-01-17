@@ -80,7 +80,12 @@ const UserProfile = ({ accountDetails }) => {
             <strong>ID:</strong> {accountDetails.id}
           </p>
           <p className="cursor-pointer hover:bg-gray-700 p-2 rounded-md transition-all duration-300">
-            <a href="https://www.themoviedb.org/settings/profile" className=" text-white hover:text-white">Chỉnh sửa hồ sơ</a>
+            <a
+              href="https://www.themoviedb.org/settings/profile"
+              className=" text-white hover:text-white"
+            >
+              Chỉnh sửa hồ sơ
+            </a>
           </p>
 
           {/* Các lựa chọn */}
@@ -94,7 +99,13 @@ const UserProfile = ({ accountDetails }) => {
             <p className="cursor-pointer hover:bg-gray-700 p-2 rounded-md transition-all duration-300">
               Xếp hạng
             </p>
-            <p className="cursor-pointer hover:bg-red-700 p-2 rounded-md transition-all duration-300">
+            <p
+              className="cursor-pointer hover:bg-red-700 p-2 rounded-md transition-all duration-300"
+              onClick={() => {
+                localStorage.removeItem("sessionId");
+                window.location.reload(); // Reload lại trang nếu cần
+              }}
+            >
               Đăng xuất
             </p>
           </div>

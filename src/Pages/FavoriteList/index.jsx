@@ -31,14 +31,12 @@ function FavoriteList() {
 
   const [activeTab, setActiveTab] = useState("movie"); // "movie" or "tv"
 
-  const handleItemClick = (item) => {
-    if (item.media_type === "movie") {
+  const handleItemClick = (activeTab,item) => {
+    if (activeTab === "movie") {
       navigate(`/movie/${item.id}`); // Điều hướng đến component Movie
-    } else if (item.media_type === "tv") {
+    } else{
       navigate(`/tvserie/${item.id}`); // Điều hướng đến component TV Series
-    } else {
-      console.error("Unknown media type:", item.media_type);
-    }
+    } 
   };
 
   if (loading || loadingAccount)
@@ -53,7 +51,7 @@ function FavoriteList() {
   const activeList = activeTab === "movie" ? movies : tvShows;
 
   return (
-    <div className="container mx-auto p-4">
+    <div className="container mx-auto max-w-screen-2xl px-16">
       <h1 className="text-2xl font-bold mb-4">Danh sách yêu thích</h1>
 
       {/* Tab Controls */}
@@ -108,7 +106,7 @@ function FavoriteList() {
             {/* Image */}
             <div
               className="relative w-32 h-full overflow-hidden cursor-pointer"
-              onClick={() => handleItemClick(item)}
+              onClick={() => handleItemClick(activeTab,item)}
             >
               <img
                 src={`${import.meta.env.VITE_IMGS_URL}${item.poster_path}`}
@@ -132,7 +130,7 @@ function FavoriteList() {
                 <div>
                   <h2
                     className="text-xl font-semibold cursor-pointer"
-                    onClick={() => handleItemClick(item)}
+                    onClick={() => handleItemClick(activeTab,item)}
                   >
                     {item.title || item.name}
                     <span className="text-gray-400 italic ml-3">

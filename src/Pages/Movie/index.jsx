@@ -21,7 +21,7 @@ function Movies() {
   }, [genreId, genres, tvGenres]);
 
   return (
-    <div className="px-16">
+    <div className="px-16 max-w-screen-2xl mx-auto">
       {selectedGenre && <MoviesByGenre selectedGenre={selectedGenre} genreName={genreName} />}
     </div>
   );

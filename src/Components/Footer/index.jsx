@@ -3,7 +3,7 @@ import logo from "../../assets/Images/logo-gm.png"; // Đảm bảo bạn có m�
 import {Link} from "react-router-dom"
 const Footer = () => {
   return (
-    <footer className="relative mt-10 bg-gray-800 text-white py-8 z-50">
+    <footer className="relative mt-10 bg-gray-800 text-white py-8 z-10">
       <div className="container mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8">
         {/* Cột 1: Logo và Button */}
         <div className="flex flex-col items-start">
