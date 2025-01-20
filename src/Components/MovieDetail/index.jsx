@@ -6,6 +6,8 @@ import { TailSpin } from "react-loader-spinner";
 import { GoDotFill } from "react-icons/go";
 import { Rating } from "../Rating";
 import { HiMiniPlay } from "react-icons/hi2";
+import { FaRegDotCircle } from "react-icons/fa";
+import Remark from "../Remark";
 
 function MovieDetail() {
   const { id } = useParams(); // Lấy ID phim từ URL
@@ -14,6 +16,7 @@ function MovieDetail() {
   const [showTrailer, setShowTrailer] = useState(false); // State để điều khiển việc hiển thị trailer
   const { movieCredits, loading } = useMovieCredits(id);
   const [activeTab, setActiveTab] = useState("movie");
+  const [visibleCount, setVisibleCount] = useState(10);
   if (loadingDetail || loadingTrailer) {
     return (
       <div className="flex justify-center items-center h-screen">
@@ -90,7 +93,7 @@ function MovieDetail() {
           </div>
 
           {/* Thông tin phim */}
-          <div className="flex-1">
+          <div className={`flex-1 ${showTrailer ? "hidden" : ""}`}>
             <h1 className="text-3xl font-bold mb-2">
               {movie.original_title}: {movie.title}
             </h1>
@@ -139,88 +142,160 @@ function MovieDetail() {
               </div>
             </div>
           </div>
+          {/* Trailer */}
+          <div className={`${!showTrailer ? "hidden" : "flex-1"} `}>
+            {showTrailer && trailerKey && (
+              <div className="flex flex-col transform transition-all duration-400 ease-in-out animate-show">
+                <iframe
+                  width="100%"
+                  height="450"
+                  src={`https://www.youtube.com/embed/${trailerKey}`}
+                  title={`${movie.title} Trailer`}
+                  frameBorder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                  className="rounded-md shadow-md"
+                ></iframe>
+              </div>
+            )}
+          </div>
         </div>
       </div>
-      <div className="w-full p-4">
+      <div className="w-full p-8 mx-auto max-w-screen-2xl px-16">
         <div className="flex justify-start gap-4">
           {/* Tab chọn */}
-          <button
+          <div
             onClick={() => setActiveTab("movie")}
-            className={`px-6 py-2 text-lg font-semibold ${
-              activeTab === "movie" ? "text-blue-600" : "text-gray-400"
+            className={`px-4 py-2 text-lg font-semibold border-b-2 cursor-pointer ${
+              activeTab === "movie"
+                ? "text-green-500 border-green-500"
+                : "text-white border-transparent"
             }`}
           >
             Thông Tin Phim
-          </button>
-          <button
+          </div>
+          <div
             onClick={() => setActiveTab("cast")}
-            className={`px-6 py-2 text-lg font-semibold ${
-              activeTab === "cast" ? "text-blue-600" : "text-gray-400"
+            className={`px-4 py-2 text-lg font-semibold border-b-2 cursor-pointer ${
+              activeTab === "cast"
+                ? "text-green-500 border-green-500"
+                : "text-white border-transparent"
             }`}
           >
             Dàn Diễn Viên
-          </button>
+          </div>
         </div>
 
         {/* Nội dung tab */}
-        {activeTab === "movie" ? (
-          <div className="mt-4">
-            <h2 className="text-2xl font-bold">{movie.title}</h2>
-            <p className="text-lg text-gray-300">{movie.tagline}</p>
-            <p className="mt-2 text-lg">{movie.overview}</p>
-            <p className="mt-2">Ngày phát hành: {movie.release_date}</p>
-            <p className="mt-2">Thời gian: {movie.runtime} phút</p>
-            <p className="mt-2">Điểm IMDB: {movie.vote_average}</p>
-          </div>
-        ) : (
-          <div className="mt-4">
-            <h2 className="text-2xl font-bold">Dàn Diễn Viên</h2>
-            <div className="flex overflow-x-auto whitespace-nowrap space-x-6 py-4">
-              {movieCredits.cast.map((actor, index) => (
-                <div
-                  key={index}
-                  className="flex flex-col items-center bg-black bg-opacity-35 gap-2 w-[160px]"
-                >
-                  {/* Ảnh diễn viên */}
-                  <div>
-                    <img
-                      src={`${import.meta.env.VITE_IMGS_URL}${
-                        actor.profile_path
-                      }`}
-                      alt={actor.name}
-                      className="w-full h-[175px] rounded-lg object-cover shadow-lg"
-                    />
-                  </div>
-                  <div className="text-center w-full">
-                    <h3 className="text-lg font-semibold text-white">
-                      {actor.name}
-                    </h3>
-                    <p className="text-sm text-gray-300 ">
-                      {actor.character}
-                    </p>
-                  </div>
+        <div className="bg-[#25283d] p-6 py-4">
+          {activeTab === "movie" ? (
+            <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="flex flex-col gap-2 text-lg">
+                <div className="flex items-center gap-2">
+                  <FaRegDotCircle className="text-green-600" />
+                  <span>
+                    Trạng thái:{" "}
+                    {movie.status === "Released"
+                      ? "Đã phát hành"
+                      : "Chưa phát hành"}
+                  </span>
                 </div>
-              ))}
+
+                <div className="flex items-center gap-2">
+                  <FaRegDotCircle className="text-green-600" />
+                  <span>
+                    Thể loại:{" "}
+                    {movie.genres.map((genre) => genre.name).join(", ")}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <FaRegDotCircle className="text-green-600" />
+                  <span>
+                    Đạo diễn: {director ? director.name : "Không có thông tin"}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <FaRegDotCircle className="text-green-600" />
+                  <span>
+                    Quốc gia:{" "}
+                    {movie.production_countries.map((c) => c.name).join(", ")}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <FaRegDotCircle className="text-green-600" />
+                  <span>Số người đánh giá: {movie.vote_count}</span>
+                </div>
+              </div>
+
+              <div className="flex flex-col gap-2 text-lg">
+                <div className="flex items-center gap-2">
+                  <FaRegDotCircle className="text-green-600" />
+                  <span>Thời lượng: {movie.runtime} phút</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <FaRegDotCircle className="text-green-600" />
+                  <span>18+: {movie.adult ? "Có" : "Không"}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <FaRegDotCircle className="text-green-600" />
+                  <span>Ngôn ngữ: {movie.original_language}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <FaRegDotCircle className="text-green-600" />
+                  <span>Điểm IMDB: {movie.vote_average}</span>
+                </div>
+              </div>
             </div>
-          </div>
-        )}
-      </div>
-      {/* Trailer */}
-      {showTrailer && trailerKey && (
-        <div className="mt-8">
-          <h3 className="text-2xl font-bold mb-4">Trailer</h3>
-          <iframe
-            width="100%"
-            height="500"
-            src={`https://www.youtube.com/embed/${trailerKey}`}
-            title={`${movie.title} Trailer`}
-            frameBorder="0"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen
-            className="rounded-md shadow-md"
-          ></iframe>
+          ) : (
+            <div className="mt-4">
+              <h2 className="text-2xl font-bold">Dàn Diễn Viên</h2>
+              <div className="scroll-container">
+                <div className="flex gap-4 px-4 z-10">
+                  {movieCredits.cast
+                    .slice(0, visibleCount)
+                    .map((actor, index) => (
+                      <div
+                        key={index}
+                        className="relative movie-item text-start text-white rounded-md hover:rounded-md transition-all border-gray-700 shadow-lg border-[1px] pb-2"
+                        style={{ minWidth: "140px", minHeight: "175px" }}
+                      >
+                        <div className="relative group overflow-hidden mb-3">
+                          <img
+                            src={`${import.meta.env.VITE_IMGS_URL}${
+                              actor.profile_path
+                            }`}
+                            alt={actor.name}
+                            className="w-full h-[175px] object-cover rounded-md rounded-b-none transition-transform duration-300 ease-in-out group-hover:scale-105"
+                          />
+                        </div>
+                        <h3 className="px-2 text-base font-semibold text-white">
+                          {actor.name}
+                        </h3>
+                        <p className="px-2 text-sm text-gray-300">
+                          {actor.character}
+                        </p>
+                      </div>
+                    ))}
+                  {visibleCount < movieCredits.cast.length && (
+                    <div className="text-center min-w-[150px] min-h-[175px] flex items-center justify-center mt-4">
+                      <button
+                        onClick={() =>
+                          setVisibleCount((prevCount) => prevCount + 5)
+                        }
+                        className="px-4 py-2 bg-[#0C0F1B] bg-opacity-50 text-white rounded-md shadow-md hover:bg-opacity-100 transition-all"
+                      >
+                        Xem thêm
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
         </div>
-      )}
+      </div>
+      <Remark />
+
     </div>
   );
 }

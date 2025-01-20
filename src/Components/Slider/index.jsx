@@ -33,7 +33,7 @@ function Sliders() {
       <div>Loading...</div>
     ) : (
       <Slider {...settings}>
-        {dataPopular.slice(0, 7).map((item, index) => (
+        {dataPopular.filter(item => item.overview).slice(0, 7).map((item, index) => (
           <SlideItem
             key={index}
             title={item.title}

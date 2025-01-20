@@ -123,8 +123,8 @@ function FavoriteList() {
             <div className="flex-1 pr-6">
               <div className="flex items-center gap-4 mb-4">
                 {/* Rating */}
-                <div className="z-10 w-9 h-9 bg-black flex items-center justify-center rounded-full">
-                  <Rating score={item.vote_average} />
+                <div className="z-10 size-10 bg-[#11131d] flex items-center justify-center rounded-full">
+                  <Rating score={item.vote_average} strokew="0.6rem" r={40}/>
                 </div>
                 {/* Title and Date */}
                 <div>

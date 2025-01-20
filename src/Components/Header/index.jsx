@@ -146,7 +146,7 @@ function Header() {
         {isSearchResultsVisible && searchResults.length > 0 && (
           <ul
             ref={searchRef}
-            className="absolute bg-gray-800 text-white w-full mt-2 rounded-md shadow-lg z-50"
+            className="absolute bg-gray-800 text-white w-full mt-2 rounded-md shadow-lg z-50 max-h-[400px] overflow-y-auto"
           >
             {searchResults.map((result) => (
               <li

@@ -364,6 +364,6 @@ export function useMovieCredits(movie_id) {
   useEffect(() => {
     fetchMovieCredits();
   }, []);
-  console.log("MovieCredits:", movieCredits);
+  // console.log("MovieCredits:", movieCredits);
   return { movieCredits,loading };
 }
