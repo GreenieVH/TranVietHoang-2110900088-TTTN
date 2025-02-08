@@ -17,7 +17,9 @@ function MovieDetail() {
   const { movieCredits, loading } = useMovieCredits(id);
   const [activeTab, setActiveTab] = useState("movie");
   const [visibleCount, setVisibleCount] = useState(10);
-  if (loadingDetail || loadingTrailer) {
+  const displayNames = new Intl.DisplayNames(["vi"], { type: "language" });
+
+  if (loadingDetail || loadingTrailer || loading) {
     return (
       <div className="flex justify-center items-center h-screen">
         <TailSpin height="80" width="80" color="#4A90E2" />
@@ -223,7 +225,7 @@ function MovieDetail() {
                 </div>
                 <div className="flex items-center gap-2">
                   <FaRegDotCircle className="text-green-600" />
-                  <span>Số người đánh giá: {movie.vote_count}</span>
+                  <span>Số lượt đánh giá: {movie.vote_count}</span>
                 </div>
               </div>
 
@@ -238,7 +240,7 @@ function MovieDetail() {
                 </div>
                 <div className="flex items-center gap-2">
                   <FaRegDotCircle className="text-green-600" />
-                  <span>Ngôn ngữ: {movie.original_language}</span>
+                  <span>Ngôn ngữ:  {displayNames.of(movie.original_language) || "Không xác định"}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <FaRegDotCircle className="text-green-600" />

@@ -5,16 +5,25 @@ import { HiOutlinePlayCircle } from "react-icons/hi2";
 import { HiHeart, HiOutlineHeart } from "react-icons/hi";
 import { useNavigate } from "react-router-dom";
 import { useAccountDetails, useFavoriteMovies } from "../../Servives/Auth";
+import { TailSpin } from "react-loader-spinner";
 
 function MoviesByGenre({ selectedGenre, genreName }) {
   const sessionId = localStorage.getItem("sessionId");
   const { accountDetails } = useAccountDetails(sessionId);
-  const { movies } = useMoviesByGenre(selectedGenre); // Fetch phim theo genre đã chọn
+  const { movies, loading } = useMoviesByGenre(selectedGenre); // Fetch phim theo genre đã chọn
   const navigate = useNavigate(); // Dùng để điều hướng đến chi tiết phim
   const { favorites, handleFavoriteToggle } = useFavoriteMovies(
     sessionId,
     accountDetails?.id
   );
+
+  if (loading) {
+      return (
+        <div className="flex justify-center items-center h-screen">
+          <TailSpin height="80" width="80" color="#4A90E2" />
+        </div>
+      );
+    }
 
   return (
     <div className="p-4">

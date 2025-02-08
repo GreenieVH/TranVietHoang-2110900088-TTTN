@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 
 const options = {
   method: "GET",
@@ -25,7 +25,7 @@ export function useGetPopular() {
       setDataPopular(data.results || []);
     } catch (error) {
       console.log(error);
-    }finally {
+    } finally {
       setLoading(false);
     }
   };
@@ -34,7 +34,7 @@ export function useGetPopular() {
     fetchPopular();
   }, []);
   // console.log("dataPopular:", dataPopular);
-  return { dataPopular,loading };
+  return { dataPopular, loading };
 }
 
 export function useGetTrending() {
@@ -45,7 +45,7 @@ export function useGetTrending() {
     "https://api.themoviedb.org/3/trending/movie/week?language=vi&page=1";
 
   const fetchTrending = async () => {
-    setLoading(true)
+    setLoading(true);
     try {
       const response = await fetch(url, options);
       if (!response.ok) {
@@ -55,7 +55,7 @@ export function useGetTrending() {
       setDataTrending(data.results || []);
     } catch (error) {
       console.log(error);
-    }finally {
+    } finally {
       setLoading(false);
     }
   };
@@ -64,7 +64,7 @@ export function useGetTrending() {
     fetchTrending();
   }, []);
   // console.log("dataTrending:", dataTrending);
-  return { dataTrending,loading };
+  return { dataTrending, loading };
 }
 
 export function useGenres() {
@@ -121,8 +121,10 @@ export function useTvGenres() {
 
 export function useMoviesByGenre(genreId) {
   const [movies, setMovies] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const fetchMovies = async () => {
+    setLoading(true);
     try {
       const response = await fetch(
         `https://api.themoviedb.org/3/discover/movie?with_genres=${genreId}&language=vi&page=1`,
@@ -135,6 +137,8 @@ export function useMoviesByGenre(genreId) {
       setMovies(data.results || []);
     } catch (error) {
       console.error("Error fetching movies:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -143,13 +147,15 @@ export function useMoviesByGenre(genreId) {
   }, [genreId]);
   // console.log("dataMovie:", movies);
 
-  return { movies };
+  return { movies, loading };
 }
 
 export function useTVByGenre(genreId) {
   const [tvs, setTvs] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const fetchTv = async () => {
+    setLoading(true);
     try {
       const response = await fetch(
         `https://api.themoviedb.org/3/discover/tv?with_genres=${genreId}&language=vi&page=1`,
@@ -162,6 +168,8 @@ export function useTVByGenre(genreId) {
       setTvs(data.results || []);
     } catch (error) {
       console.error("Error fetching movies:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -170,7 +178,7 @@ export function useTVByGenre(genreId) {
   }, [genreId]);
   // console.log("dataMovie:", movies);
 
-  return { tvs };
+  return { tvs, loading };
 }
 
 export function useMovieDetail(movieId) {
@@ -303,12 +311,13 @@ export function useTvTrailer(tvId) {
   return { trailerKey, loading };
 }
 
-export function useSearch() {
+export function useSearch(locationSearch) {
+  const [searchTerm, setSearchTerm] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
   const [error, setError] = useState(null);
 
-  const search = async (query) => {
+  const search = useCallback(async (query) => {
     if (!query.trim()) return;
 
     setIsSearching(true);
@@ -316,14 +325,15 @@ export function useSearch() {
 
     try {
       const response = await fetch(
-        `https://api.themoviedb.org/3/search/multi?query=${encodeURIComponent(query)}&language=vi-VN`,
+        `https://api.themoviedb.org/3/search/multi?query=${encodeURIComponent(
+          query
+        )}&language=vi-VN`,
         options
       );
 
       if (!response.ok) throw new Error("Failed to fetch search results");
 
       const data = await response.json();
-      // Lọc bỏ các kết quả có `media_type` là `person`
       const filteredResults = (data.results || []).filter(
         (item) => item.media_type !== "person"
       );
@@ -334,10 +344,18 @@ export function useSearch() {
     } finally {
       setIsSearching(false);
     }
-  };
-  // console.log(searchResults)
-  return { searchResults, isSearching, error, search };
-};
+  }, []);
+
+  useEffect(() => {
+    const query = new URLSearchParams(locationSearch).get("query");
+    if (query && query !== searchTerm) {
+      setSearchTerm(query);
+      search(query); // Gọi hàm search
+    }
+  }, [locationSearch, searchTerm, search]);
+  console.log("ket qua tim kiem:",searchResults)
+  return { searchTerm, searchResults, isSearching, error };
+}
 
 export function useMovieCredits(movie_id) {
   const [movieCredits, setMovieCredits] = useState([]);
@@ -356,7 +374,7 @@ export function useMovieCredits(movie_id) {
       setMovieCredits(data || []);
     } catch (error) {
       console.log(error);
-    }finally {
+    } finally {
       setLoading(false);
     }
   };
@@ -365,5 +383,33 @@ export function useMovieCredits(movie_id) {
     fetchMovieCredits();
   }, []);
   // console.log("MovieCredits:", movieCredits);
-  return { movieCredits,loading };
+  return { movieCredits, loading };
+}
+export function useTvCredits(tv_id) {
+  const [tvCredits, setTvCredits] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const url = `https://api.themoviedb.org/3/tv/${tv_id}/credits`;
+
+  const fetchTvCredits = async () => {
+    setLoading(true);
+
+    try {
+      const response = await fetch(url, options);
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const data = await response.json();
+      setTvCredits(data || []);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+  // console.log("tvcre:",tvCredits)
+  useEffect(() => {
+    fetchTvCredits();
+  }, []);
+
+  return { tvCredits, loading };
 }

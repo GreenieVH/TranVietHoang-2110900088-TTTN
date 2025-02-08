@@ -1,19 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { useSearch } from "../../Servives/GlobalApi";
+import { TailSpin } from "react-loader-spinner";
 
 function SearchResults() {
-  const [searchTerm, setSearchTerm] = useState("");
-  const { searchResults, isSearching, error, search } = useSearch();
   const location = useLocation();
-
-  useEffect(() => {
-    const query = new URLSearchParams(location.search).get("query");
-    if (query) {
-      setSearchTerm(query);
-      search(query); // Fetch results on page load based on query
-    }
-  }, [location.search, search]);
+  const { searchTerm, searchResults, isSearching, error } = useSearch(location.search);
 
   return (
     <div>

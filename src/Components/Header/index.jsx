@@ -15,6 +15,7 @@ import img_user_default from "../../assets/Images/img_user_default.png";
 import HeaderItem from "./HeaderItem";
 import UserProfile from "./UserProfile";
 import GenresList from "../GenresList";
+import SearchBar from "../SearchBar";
 
 function Header() {
   const navigate = useNavigate();
@@ -121,7 +122,7 @@ function Header() {
       )}
 
       {/* Search Bar */}
-      <div className="relative w-full max-w-[300px]" ref={searchRef}>
+      {/* <div className="relative w-full max-w-[300px]" ref={searchRef}>
         <input
           type="text"
           placeholder="Tìm kiếm..."
@@ -141,7 +142,6 @@ function Header() {
         >
           <HiMagnifyingGlass size={20} />
         </button>
-        {/* {isSearching && <p className="text-white mt-2">Đang tìm kiếm...</p>} */}
         {error && <p className="text-red-500 mt-2">{error}</p>}
         {isSearchResultsVisible && searchResults.length > 0 && (
           <ul
@@ -170,7 +170,10 @@ function Header() {
             ))}
           </ul>
         )}
-      </div>
+      </div> */}
+      <SearchBar/>
+
+      {/* Profile */}
       {!accountDetails && <div className="">
         <div className="p-2 bg-gray-800 text-white rounded-md transition-all duration-300 z-20 w-max">
           <p className="cursor-pointer font-semibold whitespace-nowrap">

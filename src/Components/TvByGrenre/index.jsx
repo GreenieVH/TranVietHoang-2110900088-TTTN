@@ -4,17 +4,26 @@ import { HiHeart, HiOutlineHeart, HiOutlinePlayCircle } from "react-icons/hi2";
 import { useNavigate } from "react-router-dom";
 import { useTVByGenre } from "../../Servives/GlobalApi";
 import { useAccountDetails, useFavoriteMovies } from "../../Servives/Auth";
+import { TailSpin } from "react-loader-spinner";
 
 function TvByGrenre({ selectedGenre, genreName }) {
   const sessionId = localStorage.getItem("sessionId");
   const { accountDetails } = useAccountDetails(sessionId);
-  const { tvs } = useTVByGenre(selectedGenre);
+  const { tvs, loading } = useTVByGenre(selectedGenre);
   const navigate = useNavigate();
   const { favorites, handleFavoriteToggle } = useFavoriteMovies(
     sessionId,
     accountDetails?.id,
     "tv"
   );
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <TailSpin height="80" width="80" color="#4A90E2" />
+      </div>
+    );
+  }
 
   return (
     <div className="p-4">
@@ -54,17 +63,14 @@ function TvByGrenre({ selectedGenre, genreName }) {
               </div>
               <h4 className="font-bold">{tv.name}</h4>
               <p className="text-gray-500">
-                    {tv.first_air_date
-                      ? new Date(tv.first_air_date).toLocaleDateString(
-                          "vi-VN",
-                          {
-                            year: "numeric",
-                            month: "long",
-                            day: "numeric",
-                          }
-                        )
-                      : "N/A"}
-                  </p>
+                {tv.first_air_date
+                  ? new Date(tv.first_air_date).toLocaleDateString("vi-VN", {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    })
+                  : "N/A"}
+              </p>
               {/* Icon yêu thích */}
               <div
                 className="absolute top-2 right-2 text-white cursor-pointer"
