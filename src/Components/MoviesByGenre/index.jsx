@@ -9,12 +9,12 @@ import { TailSpin } from "react-loader-spinner";
 
 function MoviesByGenre({ selectedGenre, genreName }) {
   const sessionId = localStorage.getItem("sessionId");
-  const { accountDetails } = useAccountDetails(sessionId);
+  const accountId = localStorage.getItem("accountId");
   const { movies, loading } = useMoviesByGenre(selectedGenre); // Fetch phim theo genre đã chọn
   const navigate = useNavigate(); // Dùng để điều hướng đến chi tiết phim
   const { favorites, handleFavoriteToggle } = useFavoriteMovies(
     sessionId,
-    accountDetails?.id
+    accountId
   );
 
   if (loading) {

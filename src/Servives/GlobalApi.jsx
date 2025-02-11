@@ -206,7 +206,7 @@ export function useMovieDetail(movieId) {
   useEffect(() => {
     if (movieId) fetchMovieDetail();
   }, [movieId]);
-  console.log("data movie detail:", movie);
+  // console.log("data movie detail:", movie);
   return { movie, loading };
 }
 
@@ -235,7 +235,7 @@ export function useTvDetail(movieId) {
   useEffect(() => {
     if (movieId) fetchTvDetail();
   }, [movieId]);
-  console.log("data tv detail:", tv);
+  // console.log("data tv detail:", tv);
   return { tv, loading };
 }
 
@@ -353,7 +353,7 @@ export function useSearch(locationSearch) {
       search(query); // Gọi hàm search
     }
   }, [locationSearch, searchTerm, search]);
-  console.log("ket qua tim kiem:",searchResults)
+  // console.log("ket qua tim kiem:",searchResults)
   return { searchTerm, searchResults, isSearching, error };
 }
 

@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import {
-  useAccountDetails,
   useFavoriteList,
   useFavoriteMovies,
 } from "../../Servives/Auth";
@@ -14,14 +13,13 @@ import { useNavigate } from "react-router-dom";
 function FavoriteList() {
   const navigate = useNavigate();
   const sessionId = localStorage.getItem("sessionId");
-  const { accountDetails, loading: loadingAccount } =
-    useAccountDetails(sessionId);
+  const accountId = localStorage.getItem("accountId");
   const { favorites: editFavorite, handleFavoriteToggle } = useFavoriteMovies(
     sessionId,
-    accountDetails?.id
+    accountId
   );
   const { movies, tvShows, loading, error } = useFavoriteList(
-    accountDetails?.id,
+    accountId,
     sessionId
   );
 
@@ -31,15 +29,15 @@ function FavoriteList() {
 
   const [activeTab, setActiveTab] = useState("movie"); // "movie" or "tv"
 
-  const handleItemClick = (activeTab,item) => {
+  const handleItemClick = (activeTab, item) => {
     if (activeTab === "movie") {
       navigate(`/movie/${item.id}`); // Điều hướng đến component Movie
-    } else{
+    } else {
       navigate(`/tvserie/${item.id}`); // Điều hướng đến component TV Series
-    } 
+    }
   };
 
-  if (loading || loadingAccount)
+  if (loading)
     return (
       <div className="flex justify-center items-center h-screen">
         <TailSpin height="80" width="80" color="#4A90E2" />
@@ -106,7 +104,7 @@ function FavoriteList() {
             {/* Image */}
             <div
               className="relative w-32 h-full overflow-hidden cursor-pointer"
-              onClick={() => handleItemClick(activeTab,item)}
+              onClick={() => handleItemClick(activeTab, item)}
             >
               <img
                 src={`${import.meta.env.VITE_IMGS_URL}${item.poster_path}`}
@@ -124,13 +122,13 @@ function FavoriteList() {
               <div className="flex items-center gap-4 mb-4">
                 {/* Rating */}
                 <div className="z-10 size-10 bg-[#11131d] flex items-center justify-center rounded-full">
-                  <Rating score={item.vote_average} strokew="0.6rem" r={40}/>
+                  <Rating score={item.vote_average} strokew="0.6rem" r={40} />
                 </div>
                 {/* Title and Date */}
                 <div>
                   <h2
                     className="text-xl font-semibold cursor-pointer"
-                    onClick={() => handleItemClick(activeTab,item)}
+                    onClick={() => handleItemClick(activeTab, item)}
                   >
                     {item.title || item.name}
                     <span className="text-gray-400 italic ml-3">

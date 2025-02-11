@@ -1,8 +1,17 @@
 import React from "react";
 import { FaStar } from "react-icons/fa";
 import { Link } from "react-router-dom";
+import { useFavoriteMovies } from "../../../Servives/Auth";
+import { HiHeart, HiOutlineHeart } from "react-icons/hi2";
 
 function TrendingItem({ title, backdrop_path, vote_average, id }) {
+  const sessionId = localStorage.getItem("sessionId");
+  const accountId = localStorage.getItem("accountId")
+  const { favorites, handleFavoriteToggle } = useFavoriteMovies(
+    sessionId,
+    accountId
+  );
+
   return (
     <div className="relative mx-3 group overflow-hidden rounded-md">
       {/* Hình ảnh */}
@@ -19,6 +28,17 @@ function TrendingItem({ title, backdrop_path, vote_average, id }) {
             {vote_average.toFixed(1)}
           </span>
         </div>
+        {/* Icon yêu thích */}
+        <div
+          className="absolute top-2 right-2 text-white cursor-pointer"
+          onClick={() => handleFavoriteToggle(id)}
+        >
+          {favorites.has(id) ? (
+            <HiHeart className="text-red-500 text-3xl" />
+          ) : (
+            <HiOutlineHeart className="text-gray-300 text-3xl" />
+          )}
+        </div>
       </div>
 
       {/* Hiệu ứng hover */}
@@ -29,7 +49,7 @@ function TrendingItem({ title, backdrop_path, vote_average, id }) {
         >
           Xem phim
         </Link>
-        
+
         {/* <h3 className="text-white text-center text-lg font-bold absolute top-0 left-0 right-0 transform translate-y-[-100%] group-hover:translate-y-0 transition-transform duration-500">
           {title}
         </h3> */}

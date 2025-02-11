@@ -21,14 +21,10 @@ function Header() {
   const navigate = useNavigate();
   const sessionId = localStorage.getItem("sessionId");
   const { accountDetails } = useAccountDetails(sessionId);
-  const { searchResults, isSearching, error, search } = useSearch();
   const { genres } = useGenres();
   const { tvGenres } = useTvGenres();
-  const [searchTerm, setSearchTerm] = useState("");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isSearchResultsVisible, setIsSearchResultsVisible] = useState(false);
   const menuRef = useRef(null);
-  const searchRef = useRef(null);
 
   const menu = [
     { name: "Trang chủ", icon: HiHome, link: "/" },
@@ -37,37 +33,6 @@ function Header() {
     { name: "Yêu thích", icon: HiStar, link: "/favoritelist" },
     { name: "WATCHLIST", icon: HiPlus, link: "/" },
   ];
-
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (menuRef.current && !menuRef.current.contains(event.target)) {
-        setIsMenuOpen(false);
-      }
-      if (searchRef.current && !searchRef.current.contains(event.target)) {
-        setIsSearchResultsVisible(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
-
-  const handleSearchSubmit = () => {
-    if (searchTerm) {
-      navigate(`/search-results?query=${searchTerm}`); // Chuyển hướng đến trang kết quả tìm kiếm
-    }
-  };
-
-  const handleItemClick = (item) => {
-    if (item.media_type === "movie") {
-      navigate(`/movie/${item.id}`); // Điều hướng đến component Movie
-    } else if (item.media_type === "tv") {
-      navigate(`/tvserie/${item.id}`); // Điều hướng đến component TV Series
-    } else {
-      console.error("Unknown media type:", item.media_type);
-    }
-  };
 
   const renderMenu = (menuItems) =>
     menuItems.map((item, index) => (
@@ -90,6 +55,12 @@ function Header() {
         )}
       </div>
     ));
+
+  useEffect(() => {
+    if (accountDetails?.id) {
+      localStorage.setItem("accountId", accountDetails.id);
+    }
+  }, [accountDetails]);
 
   return (
     <div className="sticky top-0 z-50 bg-[#0c0f1b] flex p-4 items-center justify-between">
@@ -171,16 +142,20 @@ function Header() {
           </ul>
         )}
       </div> */}
-      <SearchBar/>
+      <SearchBar />
 
       {/* Profile */}
-      {!accountDetails && <div className="">
-        <div className="p-2 bg-gray-800 text-white rounded-md transition-all duration-300 z-20 w-max">
-          <p className="cursor-pointer font-semibold whitespace-nowrap">
-            <Link to="/login" className="text-white hover:text-green-500">Đăng nhập</Link>
-          </p>
+      {!accountDetails && (
+        <div className="">
+          <div className="p-2 bg-gray-800 text-white rounded-md transition-all duration-300 z-20 w-max">
+            <p className="cursor-pointer font-semibold whitespace-nowrap">
+              <Link to="/login" className="text-white hover:text-green-500">
+                Đăng nhập
+              </Link>
+            </p>
+          </div>
         </div>
-      </div>}
+      )}
       {accountDetails && <UserProfile accountDetails={accountDetails} />}
     </div>
   );

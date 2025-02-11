@@ -128,7 +128,6 @@ export function useAccountDetails(sessionId) {
 
     fetchAccountDetails();
   }, [sessionId]);
-
   return { accountDetails, loading, error };
 }
 
@@ -184,8 +183,7 @@ export function useFavoriteList(accountId, sessionId, page = 1) {
   return { movies, tvShows, loading, error };
 }
 
-
-export const useFavoriteMovies = (sessionId, accountId) => {
+export const useFavoriteMovies = (sessionId, accountId,mediaType = "movie") => {
   const [error,setError] = useState()
   const [favorites, setFavorites] = useState(new Set());
 
@@ -195,7 +193,7 @@ export const useFavoriteMovies = (sessionId, accountId) => {
     setFavorites(new Set(storedFavorites));
   }, []);
 
-  const handleFavoriteToggle = async (movieId,mediaType = "movie") => {
+  const handleFavoriteToggle = async (movieId) => {
     const isFavorite = favorites.has(movieId);
 
     try {

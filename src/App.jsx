@@ -9,11 +9,13 @@ import TvSerie from "./Pages/TvSerie";
 import TvDetail from "./Components/TvDetail";
 import FavoriteList from "./Pages/FavoriteList";
 import SearchResults from "./Components/SearchResults";
+import ScrollToTop from "./Components/ScrollToTop";
 
 function App() {
   return (
     <>
       <BrowserRouter>
+        <ScrollToTop />
         <Routes>
           <Route path="/" element={<MainLayout><Home/></MainLayout>}/>
           <Route path="/tvs/:genreId" element={<MainLayout><TvSerie/></MainLayout>}/>

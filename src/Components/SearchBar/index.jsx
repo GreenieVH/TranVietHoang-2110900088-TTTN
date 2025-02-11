@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { HiMagnifyingGlass } from "react-icons/hi2";
 import { useSearch } from "../../Servives/GlobalApi";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -14,15 +14,30 @@ function SearchBar() {
 
   const handleSearchSubmit = () => {
     if (searchTerm.trim()) {
-      navigate(`?query=${encodeURIComponent(searchTerm)}`); // Điều hướng và cập nhật URL
+      navigate(`/search-results?query=${encodeURIComponent(searchTerm)}`); // Điều hướng và cập nhật URL
       setIsSearchResultsVisible(true);
     }
   };
 
+  // Ẩn kết quả khi click ra ngoài
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (searchRef.current && !searchRef.current.contains(event.target)) {
+        setIsSearchResultsVisible(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   const handleItemClick = (result) => {
-    // Điều hướng hoặc xử lý logic khi click vào kết quả
-    console.log("Clicked item:", result);
-    setIsSearchResultsVisible(false);
+    // Điều hướng đến chi tiết item
+    const targetPath = result.media_type === "movie" ? `/movie/${result.id}` : `/tvserie/${result.id}`;
+    navigate(targetPath);
+    setIsSearchResultsVisible(false); // Ẩn danh sách kết quả
   };
 
   return (

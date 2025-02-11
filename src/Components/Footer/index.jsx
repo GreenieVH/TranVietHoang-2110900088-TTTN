@@ -1,64 +1,96 @@
 import React from "react";
 import logo from "../../assets/Images/logo-gm.png"; // Đảm bảo bạn có một ảnh logo trong thư mục assets
-import {Link} from "react-router-dom"
+import { Link } from "react-router-dom";
 const Footer = () => {
   return (
-    <footer className="relative mt-10 bg-gray-800 text-white py-8 z-10">
-      <div className="container mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8">
-        {/* Cột 1: Logo và Button */}
+    <footer className="relative z-10 mt-10 bg-gray-900 text-gray-400 py-8 px-16 max-w-screen-2xl mx-auto">
+      <div className="container mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">
         <div className="flex flex-col items-start">
           <img src={logo} alt="Logo" className="w-32 mb-4" />
-          <Link to="/login" className="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition">
+          <Link
+            to="/login"
+            className="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition"
+          >
             Đăng ký
           </Link>
         </div>
-
-        {/* Cột 2: Khái niệm cơ bản */}
+        {/* Cột 1: Giới thiệu */}
         <div>
-          <h3 className="text-lg font-semibold mb-4">Khái niệm cơ bản</h3>
-          <ul>
-            <li><a href="" className="hover:underline">Giới thiệu về TMDB</a></li>
-            <li><a href="" className="hover:underline">Liên hệ với chúng tôi</a></li>
-            <li><a href="" className="hover:underline">Diễn đàn hỗ trợ</a></li>
-            <li><a href="" className="hover:underline">API</a></li>
-            <li><a href="" className="hover:underline">Trạng thái hệ thống</a></li>
+          <h3 className="text-white text-lg font-semibold mb-4">
+            Về Chúng Tôi
+          </h3>
+          <p className="text-sm">
+            Trang web xem phim chất lượng cao, cập nhật nhanh nhất. Chúng tôi
+            mang đến trải nghiệm giải trí tuyệt vời với kho phim đa dạng.
+          </p>
+        </div>
+
+        {/* Cột 2: Liên kết nhanh */}
+        <div>
+          <h3 className="text-white text-lg font-semibold mb-4">
+            Liên Kết Nhanh
+          </h3>
+          <ul className="space-y-2">
+            <li>
+              <a href="#" className="hover:text-white">
+                Phim Mới
+              </a>
+            </li>
+            <li>
+              <Link to='/movies/28' className="hover:text-white">
+                Phim Lẻ
+              </Link>
+            </li>
+            <li>
+              <Link to='/tvs/10759' className="hover:text-white">
+                Phim Bộ
+              </Link>
+            </li>
+            <li>
+              <a href="#" className="hover:text-white">
+                Liên Hệ
+              </a>
+            </li>
           </ul>
         </div>
 
-        {/* Cột 3: Tham gia */}
+        {/* Cột 3: Liên hệ */}
         <div>
-          <h3 className="text-lg font-semibold mb-4">Tham gia</h3>
-          <ul>
-            <li><a href="" className="hover:underline">Kinh Thánh đóng góp</a></li>
-            <li><a href="" className="hover:underline">Thêm mới phim</a></li>
-            <li><a href="" className="hover:underline">Thêm chương trình TV mới</a></li>
-          </ul>
-        </div>
-
-        {/* Cột 4: Cộng đồng */}
-        <div>
-          <h3 className="text-lg font-semibold mb-4">Cộng đồng</h3>
-          <ul>
-            <li><a href="" className="hover:underline">Hướng dẫn</a></li>
-            <li><a href="" className="hover:underline">Thảo luận</a></li>
-            <li><a href="" className="hover:underline">Bảng xếp hạng</a></li>
-          </ul>
-        </div>
-
-        {/* Cột 5: Hợp pháp */}
-        <div>
-          <h3 className="text-lg font-semibold mb-4">Hợp pháp</h3>
-          <ul>
-            <li><a href="" className="hover:underline">Điều khoản sử dụng</a></li>
-            <li><a href="" className="hover:underline">Điều khoản sử dụng API</a></li>
-            <li><a href="" className="hover:underline">Chính sách bảo mật</a></li>
-            <li><a href="" className="hover:underline">Chính sách DMCA</a></li>
+          <h3 className="text-white text-lg font-semibold mb-4">Liên Hệ</h3>
+          <ul className="space-y-2">
+            <li>
+              Email:{" "}
+              <a
+                href="mailto:tranhoangth1979@gmail.com"
+                className="hover:text-white"
+              >
+                tranhoangth1979@gmail.com
+              </a>
+            </li>
+            <li>
+              Hotline:{" "}
+              <a href="tel:+84123456789" className="hover:text-white">
+                +84 563 255 494
+              </a>
+            </li>
+            <li>
+              Mạng Xã Hội:
+              <div className="flex space-x-4 mt-2">
+                <a href="https://www.facebook.com/green07.me/" className="hover:text-white">
+                  <i className="fab fa-facebook"></i> Facebook
+                </a>
+                <a href="#" className="hover:text-white">
+                  <i className="fab fa-twitter"></i> Twitter
+                </a>
+              </div>
+            </li>
           </ul>
         </div>
       </div>
 
-      <div className="text-center mt-8 text-sm">
-        <p>© 2025 GMOVIE.</p>
+      {/* Dòng bản quyền */}
+      <div className="text-center mt-8 text-sm text-gray-500">
+        © 2025 GMovie. All rights reserved.
       </div>
     </footer>
   );

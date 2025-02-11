@@ -8,12 +8,12 @@ import { TailSpin } from "react-loader-spinner";
 
 function TvByGrenre({ selectedGenre, genreName }) {
   const sessionId = localStorage.getItem("sessionId");
-  const { accountDetails } = useAccountDetails(sessionId);
+  const accountId = localStorage.getItem("accountId");
   const { tvs, loading } = useTVByGenre(selectedGenre);
   const navigate = useNavigate();
   const { favorites, handleFavoriteToggle } = useFavoriteMovies(
     sessionId,
-    accountDetails?.id,
+    accountId,
     "tv"
   );
 
@@ -76,7 +76,7 @@ function TvByGrenre({ selectedGenre, genreName }) {
                 className="absolute top-2 right-2 text-white cursor-pointer"
                 onClick={() => handleFavoriteToggle(tv.id)}
               >
-                {favorites.has(tv.id) ? (
+                {favorites.has(tv.id, "tv") ? (
                   <HiHeart className="text-red-500 text-3xl" />
                 ) : (
                   <HiOutlineHeart className="text-red-500 text-3xl" />
