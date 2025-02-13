@@ -41,8 +41,9 @@ function Production() {
   ];
   return (
     <div className="relative z-10 flex gap-2 md:gap-5 p-2 px-5 md:px-8 mt-8">
-      {productionHouseList.map((item) => (
+      {productionHouseList.map((item, index) => (
         <div
+          key={index}
           className="border-[2px] border-gray-600
       rounded-lg hover:scale-110 transition-all duration-300
       ease-in-out cursor-pointer relative shadow-xl 

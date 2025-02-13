@@ -1,16 +1,46 @@
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { FaStar } from "react-icons/fa";
 import { Link } from "react-router-dom";
-import { useFavoriteMovies } from "../../../Servives/Auth";
+import {
+  useFavoriteMovies,
+  useFetchMovieLists,
+  useManageMovieLists,
+} from "../../../Servives/Auth";
 import { HiHeart, HiOutlineHeart } from "react-icons/hi2";
+import { MdFormatListBulletedAdd } from "react-icons/md";
+import DropdownLists from "../../DropdownLists";
 
-function TrendingItem({ title, backdrop_path, vote_average, id }) {
+function TrendingItem({ title, backdrop_path, vote_average, id,lists ,setLists}) {
   const sessionId = localStorage.getItem("sessionId");
-  const accountId = localStorage.getItem("accountId")
+  const accountId = localStorage.getItem("accountId");
+  const dropdownRef = useRef(null);
+  const sessionID = localStorage.getItem("sessionId")
+  const [showDropdown, setShowDropdown] = useState(false);
+
   const { favorites, handleFavoriteToggle } = useFavoriteMovies(
     sessionId,
     accountId
   );
+
+  const handleToggle = () => {
+    if(!sessionID){
+      alert("Đăng nhập để tiếp tục!")
+      return
+    }
+    setShowDropdown(!showDropdown);
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setShowDropdown(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   return (
     <div className="relative mx-3 group overflow-hidden rounded-md">
@@ -22,7 +52,7 @@ function TrendingItem({ title, backdrop_path, vote_average, id }) {
           alt={title}
         />
         {/* Điểm đánh giá */}
-        <div className="absolute top-2 left-2 bg-black bg-opacity-70 text-yellow-400 flex items-center gap-1 px-2 py-1 rounded-md shadow-md">
+        <div className="absolute top-2 left-2 z-20 bg-black bg-opacity-70 text-yellow-400 flex items-center gap-1 px-2 py-1 rounded-md shadow-md">
           <FaStar />
           <span className="text-sm font-semibold">
             {vote_average.toFixed(1)}
@@ -39,6 +69,14 @@ function TrendingItem({ title, backdrop_path, vote_average, id }) {
             <HiOutlineHeart className="text-gray-300 text-3xl" />
           )}
         </div>
+        <div
+          className="absolute top-10 right-2 text-white cursor-pointer"
+          onClick={handleToggle}
+        >
+          <MdFormatListBulletedAdd className="text-3xl" />
+        </div>
+        {/* Dropdown hiển thị danh sách */}
+        <div  ref={dropdownRef}><DropdownLists  showDropdown={showDropdown} id={id} lists={lists} setLists={setLists} setShowDropdown={setShowDropdown}/></div>
       </div>
 
       {/* Hiệu ứng hover */}

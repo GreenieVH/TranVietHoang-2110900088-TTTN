@@ -1,21 +1,47 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { HiOutlinePlayCircle } from "react-icons/hi2";
 import { HiHeart, HiOutlineHeart } from "react-icons/hi";
-import { useFavoriteMovies } from "../../Servives/Auth";
-import { useGetPopular } from "../../Servives/GlobalApi";
 import { Rating } from "../Rating";
+import DropdownLists from "../DropdownLists";
+import { MdFormatListBulletedAdd } from "react-icons/md";
 
-function PopularMovies() {
-  const sessionId = localStorage.getItem("sessionId");
-  const accountId = localStorage.getItem("accountId");
-  const { dataPopular } = useGetPopular();
-  const { favorites, handleFavoriteToggle } = useFavoriteMovies(
-    sessionId,
-    accountId
-  );
+function PopularMovies({
+  favorites,
+  handleFavoriteToggle,
+  dataPopular,
+  lists,
+  setLists,
+}) {
   const navigate = useNavigate();
+  const [showDropdown, setShowDropdown] = useState(null);
   const [activeButton, setActiveButton] = useState(1);
+  const dropdownRef = useRef(null);
+  const sessionID = localStorage.getItem("sessionId")
+
+  const handleToggle = (id) => {
+    if(!sessionID){
+      alert("Đăng nhập để tiếp tục!")
+      return
+    }
+    setShowDropdown((prevId) => (prevId === id ? null : id));
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target) &&
+        !event.target.closest(".dropdown-content")
+      ) {
+        setShowDropdown(null);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   // State lưu trữ background image
   const [backgroundImage, setBackgroundImage] = useState("");
@@ -113,7 +139,7 @@ function PopularMovies() {
               <div
                 key={movie.id}
                 className="relative movie-item text-white rounded-md hover:rounded-md p-2 text-center transition-all"
-                style={{ maxWidth: "200px"}}
+                style={{ maxWidth: "200px" }}
                 onMouseEnter={() => handleMouseEnter(movie.backdrop_path)}
                 onMouseLeave={handleMouseLeave}
               >
@@ -123,7 +149,7 @@ function PopularMovies() {
                     alt={movie.title}
                     className="w-full h-[250px] object-cover rounded-md transition-transform duration-300 ease-in-out group-hover:scale-105"
                   />
-  
+
                   {/* Nút Play */}
                   <div
                     className="absolute inset-0 flex justify-center items-center bg-black bg-opacity-30 opacity-0 group-hover:opacity-100 transition-opacity duration-300 cursor-pointer"
@@ -146,7 +172,7 @@ function PopularMovies() {
                       })
                     : "N/A"}
                 </p>
-  
+
                 {/* Icon yêu thích */}
                 <div
                   className="absolute top-2 right-2 text-white cursor-pointer"
@@ -157,6 +183,20 @@ function PopularMovies() {
                   ) : (
                     <HiOutlineHeart className="text-gray-300 text-3xl" />
                   )}
+                </div>
+                <div
+                  className="absolute top-10 right-2 text-white cursor-pointer"
+                  onClick={() => handleToggle(movie.id)}
+                >
+                  <MdFormatListBulletedAdd className="text-3xl" />
+                </div>
+                <div ref={dropdownRef} className="dropdown-content">
+                  <DropdownLists
+                    showDropdown={showDropdown === movie.id}
+                    id={movie.id}
+                    lists={lists}
+                    setLists={setLists}
+                  />
                 </div>
               </div>
             ))}

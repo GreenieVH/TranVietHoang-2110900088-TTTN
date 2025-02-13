@@ -2,8 +2,10 @@ import React from "react";
 import { TiArrowRightThick } from "react-icons/ti";
 import { FaStar, FaStarHalfStroke } from "react-icons/fa6";
 import { FaStarHalfAlt } from "react-icons/fa";
+import { Link } from "react-router-dom";
 
 function SlideItem({
+  id,
   title,
   backdrop_path,
   overview,
@@ -63,10 +65,10 @@ function SlideItem({
           <p className="text-sm leading-relaxed line-clamp-3 mb-4">
             {overview}
           </p>
-          <div className="flex items-center justify-center gap-2 w-[150px] p-2 font-semibold rounded-full border-[2px] border-[#F87171] hover:bg-red-400 bg-transparent cursor-pointer transition-transform duration-700 ease-in-out">
+          <Link to={`/movie/${id}`} className="flex items-center justify-center gap-2 w-[150px] p-2 text-white hover:text-white font-semibold rounded-full border-[2px] border-[#F87171] hover:bg-red-400 bg-transparent cursor-pointer transition-transform duration-700 ease-in-out">
             Xem ngay
             <TiArrowRightThick size={20} />
-          </div>
+          </Link>
         </div>
       </div>
     </div>

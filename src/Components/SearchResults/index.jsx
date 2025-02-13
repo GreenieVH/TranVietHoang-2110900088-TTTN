@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useSearch } from "../../Servives/GlobalApi";
 import { HiOutlinePlayCircle } from "react-icons/hi2";
@@ -42,7 +42,7 @@ function SearchResults() {
         ? `/movie/${result.id}`
         : `/tvserie/${result.id}`;
     navigate(targetPath);
-    setIsSearchResultsVisible(false); // Ẩn danh sách kết quả
+    // setIsSearchResultsVisible(false); 
   };
 
   return (
@@ -75,7 +75,7 @@ function SearchResults() {
       {/* Content: Hiển thị danh sách item */}
       <div className="w-4/5 bg-gray-900 p-4 rounded-r-md shadow-md">
         <h1 className="text-xl font-bold mb-4">
-          Kết quả tìm kiếm cho "{searchTerm}"
+          {`Kết quả tìm kiếm cho "${searchTerm}"`}
         </h1>
         {isSearching && <p className="text-gray-400">Đang tìm kiếm...</p>}
         {error && <p className="text-red-500">{error}</p>}

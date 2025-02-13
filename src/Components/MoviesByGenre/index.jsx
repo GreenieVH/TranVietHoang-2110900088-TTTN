@@ -1,29 +1,65 @@
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useMoviesByGenre } from "../../Servives/GlobalApi";
 import { FaStar } from "react-icons/fa";
 import { HiOutlinePlayCircle } from "react-icons/hi2";
 import { HiHeart, HiOutlineHeart } from "react-icons/hi";
 import { useNavigate } from "react-router-dom";
-import { useAccountDetails, useFavoriteMovies } from "../../Servives/Auth";
+import { useFavoriteMovies, useFetchMovieLists } from "../../Servives/Auth";
 import { TailSpin } from "react-loader-spinner";
+import DropdownLists from "../DropdownLists";
+import { MdFormatListBulletedAdd } from "react-icons/md";
 
 function MoviesByGenre({ selectedGenre, genreName }) {
   const sessionId = localStorage.getItem("sessionId");
   const accountId = localStorage.getItem("accountId");
-  const { movies, loading } = useMoviesByGenre(selectedGenre); // Fetch phim theo genre đã chọn
-  const navigate = useNavigate(); // Dùng để điều hướng đến chi tiết phim
+  const navigate = useNavigate();
+  const dropdownRefs = useRef({});
+  const { movies, loading } = useMoviesByGenre(selectedGenre);
+  const [showDropdown, setShowDropdown] = useState(null);
+  const {
+    lists,
+    loading: LoadingMovieList,
+    setLists,
+  } = useFetchMovieLists(sessionId, accountId);
   const { favorites, handleFavoriteToggle } = useFavoriteMovies(
     sessionId,
     accountId
   );
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      let clickedInside = false;
+      Object.values(dropdownRefs.current).forEach((ref) => {
+        if (ref && ref.contains(event.target)) {
+          clickedInside = true;
+        }
+      });
 
-  if (loading) {
-      return (
-        <div className="flex justify-center items-center h-screen">
-          <TailSpin height="80" width="80" color="#4A90E2" />
-        </div>
-      );
+      if (!clickedInside) {
+        setShowDropdown(null);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  if (loading || LoadingMovieList) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <TailSpin height="80" width="80" color="#4A90E2" />
+      </div>
+    );
+  }
+  const handleToggle = (id) => {
+    if (!sessionId) {
+      alert("Đăng nhập để tiếp tục!");
+      return;
     }
+    setShowDropdown((prevId) => (prevId === id ? null : id));
+    // console.log(showDropdown)
+  };
 
   return (
     <div className="p-4">
@@ -63,18 +99,15 @@ function MoviesByGenre({ selectedGenre, genreName }) {
               </div>
               <h4 className="font-bold">{movie.title}</h4>
               <p className="text-gray-500">
-                    {movie.release_date
-                      ? new Date(movie.release_date).toLocaleDateString(
-                          "vi-VN",
-                          {
-                            year: "numeric",
-                            month: "long",
-                            day: "numeric",
-                          }
-                        )
-                      : "N/A"}
-                  </p>
-              
+                {movie.release_date
+                  ? new Date(movie.release_date).toLocaleDateString("vi-VN", {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    })
+                  : "N/A"}
+              </p>
+
               {/* Icon yêu thích */}
               <div
                 className="absolute top-2 right-2 text-white cursor-pointer"
@@ -85,6 +118,23 @@ function MoviesByGenre({ selectedGenre, genreName }) {
                 ) : (
                   <HiOutlineHeart className="text-red-500 text-3xl" />
                 )}
+              </div>
+              <div
+                className="absolute top-10 right-2 text-white cursor-pointer"
+                onClick={() => handleToggle(movie.id)}
+              >
+                <MdFormatListBulletedAdd className="text-3xl" />
+              </div>
+              <div
+                ref={(el) => (dropdownRefs.current[movie.id] = el)}
+                className="dropdown-content"
+              >
+                <DropdownLists
+                  showDropdown={showDropdown === movie.id}
+                  id={movie.id}
+                  lists={lists}
+                  setLists={setLists}
+                />
               </div>
             </div>
           ))

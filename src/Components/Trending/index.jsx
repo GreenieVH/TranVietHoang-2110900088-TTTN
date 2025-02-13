@@ -1,26 +1,22 @@
-import React from "react";
-import { useGetTrending } from "../../Servives/GlobalApi";
+import React, { useContext, useEffect, useState } from "react";
 import TrendingItem from "./TrendingItem";
 import Slider from "react-slick";
-import { Link } from "react-router-dom"; // Import Link để điều hướng
-import { motion } from "framer-motion";
 import { TailSpin } from "react-loader-spinner";
 
-function Trending() {
-  const { dataTrending,loading } = useGetTrending();
+function Trending({dataTrending,lists,setLists,Loadingtrending,LoadingMovieList}) {
 
-  if (loading)
-      return (
-        <div className="flex justify-center items-center h-screen">
-          <TailSpin height="80" width="80" color="#4A90E2" />
-        </div>
-      );
+  if (Loadingtrending || LoadingMovieList)
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <TailSpin height="80" width="80" color="#4A90E2" />
+      </div>
+    );
 
   const settings = {
-    infinite: true, 
-    speed: 500, 
-    slidesToShow: 5, 
-    slidesToScroll: 1, 
+    infinite: true,
+    speed: 500,
+    slidesToShow: 5,
+    slidesToScroll: 1,
     arrows: true,
     responsive: [
       {
@@ -47,12 +43,15 @@ function Trending() {
         ) : (
           <Slider {...settings}>
             {dataTrending.map((item, index) => (
-                <TrendingItem
-                  title={item.title}
-                  backdrop_path={item.poster_path}
-                  vote_average={item.vote_average}
-                  id={item.id}
-                />
+              <TrendingItem
+                key={index}
+                title={item.title}
+                backdrop_path={item.poster_path}
+                vote_average={item.vote_average}
+                id={item.id}
+                lists={lists}
+                setLists={setLists}
+              />
             ))}
           </Slider>
         )}

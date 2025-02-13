@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   useFavoriteList,
   useFavoriteMovies,
@@ -22,10 +22,13 @@ function FavoriteList() {
     accountId,
     sessionId
   );
-
-  if (!sessionId) {
-    navigate(`/login`);
-  }
+  useEffect(()=>{
+    if (!sessionId) {
+      alert("Đăng nhập để tiếp tục!")
+      navigate(`/login`);
+    }
+  },[])
+  
 
   const [activeTab, setActiveTab] = useState("movie"); // "movie" or "tv"
 

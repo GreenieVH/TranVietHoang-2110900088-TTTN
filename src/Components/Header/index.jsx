@@ -1,17 +1,15 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useGenres, useSearch, useTvGenres } from "../../Servives/GlobalApi";
+import { useGenres, useTvGenres } from "../../Servives/GlobalApi";
 import {
   HiHome,
-  HiMagnifyingGlass,
   HiStar,
   HiPlayCircle,
   HiTv,
 } from "react-icons/hi2";
-import { HiPlus, HiDotsVertical, HiMenu, HiX } from "react-icons/hi";
+import { HiPlus, HiMenu, HiX } from "react-icons/hi";
 import { useAccountDetails } from "../../Servives/Auth";
 import logo from "../../assets/Images/logo-gm.png";
-import img_user_default from "../../assets/Images/img_user_default.png";
 import HeaderItem from "./HeaderItem";
 import UserProfile from "./UserProfile";
 import GenresList from "../GenresList";
@@ -31,7 +29,7 @@ function Header() {
     { name: "Phim lẻ", icon: HiPlayCircle, link: "/movies/28", isGenres: true },
     { name: "Phim Bộ", icon: HiTv, link: "/tvs/10759", isGenres: true },
     { name: "Yêu thích", icon: HiStar, link: "/favoritelist" },
-    { name: "WATCHLIST", icon: HiPlus, link: "/" },
+    { name: "WATCHLIST", icon: HiPlus, link: "/watch-list" },
   ];
 
   const renderMenu = (menuItems) =>
@@ -92,56 +90,7 @@ function Header() {
         </div>
       )}
 
-      {/* Search Bar */}
-      {/* <div className="relative w-full max-w-[300px]" ref={searchRef}>
-        <input
-          type="text"
-          placeholder="Tìm kiếm..."
-          className="bg-gray-800 text-white px-4 py-2 rounded-md w-full md:w-60 focus:outline-none"
-          value={searchTerm}
-          onChange={(e) => {
-            setSearchTerm(e.target.value);
-            setIsSearchResultsVisible(true);
-            if (e.target.value.trim()) {
-              search(e.target.value); // Gọi hàm tìm kiếm ngay khi nhập
-            }
-          }}
-        />
-        <button
-          onClick={handleSearchSubmit} // Chuyển hướng khi nhấn tìm kiếm
-          className="absolute right-2 top-1/2 h-10 transform -translate-y-1/2 text-black focus:outline-none"
-        >
-          <HiMagnifyingGlass size={20} />
-        </button>
-        {error && <p className="text-red-500 mt-2">{error}</p>}
-        {isSearchResultsVisible && searchResults.length > 0 && (
-          <ul
-            ref={searchRef}
-            className="absolute bg-gray-800 text-white w-full mt-2 rounded-md shadow-lg z-50 max-h-[400px] overflow-y-auto"
-          >
-            {searchResults.map((result) => (
-              <li
-                key={result.id}
-                className="px-4 py-2 hover:bg-gray-700 cursor-pointer flex"
-                onClick={() => handleItemClick(result)} // Điều hướng đến chi tiết phim/tv khi click
-              >
-                <img
-                  src={`${import.meta.env.VITE_IMGS_URL}/${result.poster_path}`}
-                  alt={result.title || result.name || "No title"}
-                  className="w-16 h-24 object-cover rounded-md"
-                />
-                <div className="ml-4">
-                  <p>{result.title || result.name}</p>
-                  <p>
-                    Thể loại:{" "}
-                    {result.media_type === "tv" ? "TV Serie" : "Movie"}
-                  </p>
-                </div>
-              </li>
-            ))}
-          </ul>
-        )}
-      </div> */}
+      {/* SearchBar */}
       <SearchBar />
 
       {/* Profile */}

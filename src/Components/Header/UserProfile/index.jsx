@@ -58,7 +58,7 @@ const UserProfile = ({ accountDetails }) => {
       {showDetails && (
         <div
           ref={detailsRef} // Gắn ref vào chi tiết thông tin
-          className="absolute right-0 top-full mt-2 p-4 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 text-white border border-gray-300 rounded-lg shadow-2xl opacity-100 visible transition-all duration-300 z-30 w-[300px] pointer-events-auto"
+          className="absolute right-0 top-full mt-2 p-4 bg-[rgba(3,37,65)] text-white border border-gray-300 rounded-lg shadow-2xl opacity-100 visible transition-all duration-300 z-30 w-[300px] pointer-events-auto"
         >
           {/* Thông tin tài khoản */}
           <h2 className="text-lg font-bold mb-2 border-b border-white pb-1">
@@ -103,6 +103,7 @@ const UserProfile = ({ accountDetails }) => {
               className="cursor-pointer hover:bg-red-700 p-2 rounded-md transition-all duration-300"
               onClick={() => {
                 localStorage.removeItem("sessionId");
+                localStorage.removeItem("accountId");
                 window.location.reload(); // Reload lại trang nếu cần
               }}
             >
