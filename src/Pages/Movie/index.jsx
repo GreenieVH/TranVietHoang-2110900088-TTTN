@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useGenres, useTvGenres } from "../../Servives/GlobalApi";
-import MoviesByGenre from "../../Components/MoviesByGenre";
+import MoviesByGenre from "../../Features/MoviesByGenre";
 
 function Movies() {
   const { genreId } = useParams(); // Lấy genreId từ URL

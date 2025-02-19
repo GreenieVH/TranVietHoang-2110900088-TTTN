@@ -62,6 +62,18 @@
   background-position: center;
   z-index: 2;
 }
+/* Thêm phần tử cuộn với background */
+.scroll-vertical  {
+  overflow-y: auto;
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
+  scrollbar-color: #4ACE58 #1b2330;
+  transition: background-image 0.5s ease; /* Thêm hiệu ứng cho background */
+  background-size: cover;
+  border-radius: 5px;
+  background-position: center;
+  z-index: 2;
+}
 /* Ẩn các nút mũi tên */
 .scroll-container::-webkit-scrollbar-button {
   display: none;

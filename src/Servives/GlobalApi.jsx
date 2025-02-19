@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+import { useSearchParams } from "react-router-dom";
 
 const options = {
   method: "GET",
@@ -122,12 +123,14 @@ export function useTvGenres() {
 export function useMoviesByGenre(genreId) {
   const [movies, setMovies] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
 
-  const fetchMovies = async () => {
+  const fetchMovies = async (pageNum = 1) => {
     setLoading(true);
     try {
       const response = await fetch(
-        `https://api.themoviedb.org/3/discover/movie?with_genres=${genreId}&language=vi&page=1`,
+        `https://api.themoviedb.org/3/discover/movie?with_genres=${genreId}&language=vi&page=${pageNum}`,
         options
       );
       if (!response.ok) {
@@ -135,6 +138,7 @@ export function useMoviesByGenre(genreId) {
       }
       const data = await response.json();
       setMovies(data.results || []);
+      setTotalPages(data.total_pages);
     } catch (error) {
       console.error("Error fetching movies:", error);
     } finally {
@@ -143,42 +147,81 @@ export function useMoviesByGenre(genreId) {
   };
 
   useEffect(() => {
-    if (genreId) fetchMovies();
+    if (genreId) {
+      setPage(1); // Reset về trang đầu khi đổi thể loại
+      fetchMovies(1);
+    }
   }, [genreId]);
-  // console.log("dataMovie:", movies);
 
-  return { movies, loading };
+  const nextPage = () => {
+    if (page < totalPages) {
+      const newPage = page + 1;
+      setPage(newPage);
+      fetchMovies(newPage);
+    }
+  };
+
+  const prevPage = () => {
+    if (page > 1) {
+      const newPage = page - 1;
+      setPage(newPage);
+      fetchMovies(newPage);
+    }
+  };
+
+  return { movies, loading, page, totalPages, nextPage, prevPage };
 }
 
 export function useTVByGenre(genreId) {
   const [tvs, setTvs] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
 
-  const fetchTv = async () => {
+  const fetchTv = async (pageNum = 1) => {
     setLoading(true);
     try {
       const response = await fetch(
-        `https://api.themoviedb.org/3/discover/tv?with_genres=${genreId}&language=vi&page=1`,
+        `https://api.themoviedb.org/3/discover/tv?with_genres=${genreId}&language=vi&page=${pageNum}`,
         options
       );
       if (!response.ok) {
-        throw new Error("Failed to fetch movies");
+        throw new Error("Failed to fetch TV shows");
       }
       const data = await response.json();
       setTvs(data.results || []);
+      setTotalPages(data.total_pages);
     } catch (error) {
-      console.error("Error fetching movies:", error);
+      console.error("Error fetching TV shows:", error);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    if (genreId) fetchTv();
+    if (genreId) {
+      setPage(1); // Reset về trang đầu khi đổi thể loại
+      fetchTv(1);
+    }
   }, [genreId]);
-  // console.log("dataMovie:", movies);
 
-  return { tvs, loading };
+  const nextPage = () => {
+    if (page < totalPages) {
+      const newPage = page + 1;
+      setPage(newPage);
+      fetchTv(newPage);
+    }
+  };
+
+  const prevPage = () => {
+    if (page > 1) {
+      const newPage = page - 1;
+      setPage(newPage);
+      fetchTv(newPage);
+    }
+  };
+
+  return { tvs, loading, page, totalPages, nextPage, prevPage };
 }
 
 export function useMovieDetail(movieId) {
@@ -413,3 +456,137 @@ export function useTvCredits(tv_id) {
 
   return { tvCredits, loading };
 }
+
+export function useMoviesFilter(selectedGenre, filters) {
+  const [movies, setMovies] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  // Cập nhật URL dựa trên bộ lọc
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (filters.genres.length) params.set("genres", filters.genres.join(","));
+    if (filters.minRating) params.set("minRating", filters.minRating);
+    if (filters.minVotes) params.set("minVotes", filters.minVotes);
+    if (filters.year) params.set("year", filters.year);
+    params.set("page", page);
+
+    setSearchParams(params);
+  }, [selectedGenre, filters, page]);
+
+  const fetchMovies = async (pageNum = 1) => {
+    setLoading(true);
+    try {
+      let query = `&with_genres=${selectedGenre}`;
+      if (filters.genres.length) query += `&with_genres=${filters.genres.join(",")}`;
+      if (filters.minRating) query += `&vote_average.gte=${filters.minRating}`;
+      if (filters.minVotes) query += `&vote_count.gte=${filters.minVotes}`;
+      if (filters.year) query += `&primary_release_year=${filters.year}`;
+
+      const response = await fetch(
+        `https://api.themoviedb.org/3/discover/movie?language=vi&page=${pageNum}${query}&api_key=${import.meta.env.VITE_API_KEY}`, options
+      );
+      if (!response.ok) throw new Error("Failed to fetch movies");
+
+      const data = await response.json();
+      setMovies(data.results || []);
+      setTotalPages(data.total_pages);
+    } catch (error) {
+      console.error("Error fetching movies:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (selectedGenre) {
+      setPage(1); // Reset về trang 1 khi đổi thể loại hoặc bộ lọc
+      fetchMovies(1);
+    }
+  }, [selectedGenre, filters]);
+
+  useEffect(() => {
+    fetchMovies(page);
+  }, [page]);
+
+  const nextPage = () => {
+    if (page < totalPages) setPage((prev) => prev + 1);
+  };
+
+  const prevPage = () => {
+    if (page > 1) setPage((prev) => prev - 1);
+  };
+
+  return { movies, loading, page, totalPages, nextPage, prevPage };
+}
+
+export function useTvFilter(selectedGenre, filters) {
+  const [tvs, setTvs] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  // Cập nhật URL dựa trên bộ lọc
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (filters.genres.length) params.set("genres", filters.genres.join(","));
+    if (filters.minRating) params.set("minRating", filters.minRating);
+    if (filters.minVotes) params.set("minVotes", filters.minVotes);
+    if (filters.year) params.set("year", filters.year);
+    params.set("page", page);
+
+    setSearchParams(params);
+  }, [selectedGenre, filters, page]);
+
+  const fetchTv = async (pageNum = 1) => {
+    setLoading(true);
+    try {
+      let query = `&with_genres=${selectedGenre}`;
+      if (filters.genres.length) query += `&with_genres=${filters.genres.join(",")}`;
+      if (filters.minRating) query += `&vote_average.gte=${filters.minRating}`;
+      if (filters.minVotes) query += `&vote_count.gte=${filters.minVotes}`;
+      if (filters.year) query += `&first_air_date_year=${filters.year}`;
+
+      const response = await fetch(
+        `https://api.themoviedb.org/3/discover/tv?language=vi&page=${pageNum}${query}&api_key=${import.meta.env.VITE_API_KEY}`,
+        options
+      );
+
+      if (!response.ok) throw new Error("Failed to fetch TV shows");
+
+      const data = await response.json();
+      setTvs(data.results || []);
+      setTotalPages(data.total_pages);
+    } catch (error) {
+      console.error("Error fetching TV shows:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (selectedGenre) {
+      setPage(1); // Reset về trang 1 khi đổi thể loại hoặc bộ lọc
+      fetchTv(1);
+    }
+  }, [selectedGenre, filters]);
+
+  useEffect(() => {
+    fetchTv(page);
+  }, [page]);
+
+  const nextPage = () => {
+    if (page < totalPages) setPage((prev) => prev + 1);
+  };
+
+  const prevPage = () => {
+    if (page > 1) setPage((prev) => prev - 1);
+  };
+
+  return { tvs, loading, page, totalPages, nextPage, prevPage };
+}
+
+

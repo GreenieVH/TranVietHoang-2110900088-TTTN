@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import Sliders from "../../Components/Slider";
-import Trending from "../../Components/Trending";
-import Production from "../../Components/Production";
-import PopularMovies from "../../Components/PopularMovies";
+import Sliders from "../../Components/ui/Slider";
+import Trending from "../../Components/ui/Trending";
+import Production from "../../Components/ui/Production";
+import PopularMovies from "../../Components/ui/PopularMovies";
 import { useFavoriteMovies, useFetchMovieLists } from "../../Servives/Auth";
 import { useGetPopular, useGetTrending } from "../../Servives/GlobalApi";
 

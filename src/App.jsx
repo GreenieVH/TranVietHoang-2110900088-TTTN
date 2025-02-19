@@ -1,18 +1,20 @@
 import "./App.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Home from "./Pages/Home";
-import MainLayout from "./Components/Layouts/MainLayout";
-import Movies from "./Pages/Movie";
-import MovieDetail from "./Components/MovieDetail";
-import Login from "./Pages/Login";
-import TvSerie from "./Pages/TvSerie";
-import TvDetail from "./Components/TvDetail";
-import FavoriteList from "./Pages/FavoriteList";
-import SearchResults from "./Components/SearchResults";
-import ScrollToTop from "./Components/ScrollToTop";
-import WatchList from "./Components/WatchList";
 import AuthContext from "./Servives/Context";
-import MovieByList from "./Components/MovieByList";
+import MainLayout from "./Components/Layouts/MainLayout";
+import Home from "./Pages/Home";
+import Login from "./Pages/Login";
+import Movies from "./Pages/Movie";
+import TvSerie from "./Pages/TvSerie";
+import FavoriteList from "./Pages/FavoriteList";
+import SearchResults from "./Pages/SearchResults";
+import WatchList from "./Pages/WatchList";
+import MovieDetail from "./Features/MovieDetail";
+import TvDetail from "./Features/TvDetail";
+import MovieByList from "./Features/MovieByList";
+import FollowList from "./Features/FollowList";
+import ScrollToTop from "./Components/common/ScrollToTop";
+import MovieList from "./Features/MovieList";
 
 function App() {
   return (
@@ -31,6 +33,8 @@ function App() {
               <Route path="/search-results" element={<SearchResults />} />
               <Route path="/watch-list" element={<WatchList />} />
               <Route path="/movie-by-list/:listId" element={<MovieByList />} />
+              <Route path="/follow-list" element={<FollowList />} />
+              <Route path="/test" element={<MovieList />} />
             </Route>
               <Route path="/login" element={<Login />} />
           </Routes>

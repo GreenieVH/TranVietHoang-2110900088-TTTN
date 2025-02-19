@@ -7,7 +7,7 @@ import { TailSpin } from "react-loader-spinner";
 import { HiOutlineStar, HiPlay } from "react-icons/hi2";
 import { HiHeart, HiOutlineHeart, HiX } from "react-icons/hi";
 import { MdFormatListBulletedAdd } from "react-icons/md";
-import { Rating } from "../../Components/Rating";
+import { Rating } from "../../Components/common/Rating";
 import { useNavigate } from "react-router-dom";
 
 function FavoriteList() {
