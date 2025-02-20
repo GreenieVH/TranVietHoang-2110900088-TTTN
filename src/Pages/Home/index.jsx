@@ -3,18 +3,27 @@ import Sliders from "../../Components/ui/Slider";
 import Trending from "../../Components/ui/Trending";
 import Production from "../../Components/ui/Production";
 import PopularMovies from "../../Components/ui/PopularMovies";
-import { useFavoriteMovies, useFetchMovieLists } from "../../Servives/Auth";
+import {
+  useFavoriteList,
+  useFavoriteMovies,
+  useFetchMovieLists,
+} from "../../Servives/Auth";
 import { useGetPopular, useGetTrending } from "../../Servives/GlobalApi";
 
 function Home() {
   const sessionId = localStorage.getItem("sessionId");
   const accountId = localStorage.getItem("accountId");
-  const { lists, loading:LoadingMovieList, setLists } = useFetchMovieLists(sessionId, accountId);
+  const {
+    lists,
+    loading: LoadingMovieList,
+    setLists,
+  } = useFetchMovieLists(sessionId, accountId);
   const { dataTrending, loading: Loadingtrending } = useGetTrending();
   const { favorites, handleFavoriteToggle } = useFavoriteMovies(
     sessionId,
     accountId
   );
+  const { movies, tvShows, loading, error } = useFavoriteList();
   const { dataPopular } = useGetPopular();
 
   return (
@@ -33,6 +42,7 @@ function Home() {
         dataPopular={dataPopular}
         lists={lists}
         setLists={setLists}
+        movies={movies}
       />
       <Production />
     </div>

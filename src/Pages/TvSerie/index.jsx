@@ -21,7 +21,7 @@ function TvSerie() {
   }, [genreId, genres, tvGenres]);
 
   return (
-    <div className="px-16 max-w-screen-2xl mx-auto">
+    <div className="px-16 max-w-screen-2xl mx-auto min-h-screen">
       {selectedGenre && <TvByGrenre selectedGenre={selectedGenre} genreName={genreName} />}
     </div>
   );

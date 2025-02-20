@@ -5,7 +5,7 @@ function ChangePage({page,prevPage,nextPage,totalPages}) {
     <div className="flex justify-center items-center my-2 gap-3">
       {/* Nút trang trước */}
       <button
-        className={`p-2 text-white bg-blue-600 rounded-md ${
+        className={`p-2 text-white bg-[#032541] rounded-md ${
           page === 1 ? "opacity-50 cursor-not-allowed" : ""
         }`}
         onClick={prevPage}
@@ -18,7 +18,7 @@ function ChangePage({page,prevPage,nextPage,totalPages}) {
 
       {/* Nút trang sau */}
       <button
-        className={`p-2 text-white bg-blue-600 rounded-md ${
+        className={`p-2 text-white bg-[#032541] rounded-md ${
           page === totalPages ? "opacity-50 cursor-not-allowed" : ""
         }`}
         onClick={nextPage}

@@ -71,7 +71,7 @@ function SearchBar() {
       </button>
       {error && <p className="text-red-500 mt-2">{error}</p>}
       {isSearchResultsVisible && searchResults.length > 0 && (
-        <ul className="absolute bg-gray-800 text-white w-full mt-2 rounded-md shadow-lg z-50 max-h-[400px] overflow-y-auto">
+        <ul className="absolute bg-gray-800 text-white w-full mt-2 rounded-md shadow-lg z-50 max-h-[400px] scroll-vertical">
           {searchResults.map((result) => (
             <li
               key={result.id}

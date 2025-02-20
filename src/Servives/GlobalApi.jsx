@@ -480,13 +480,17 @@ export function useMoviesFilter(selectedGenre, filters) {
     setLoading(true);
     try {
       let query = `&with_genres=${selectedGenre}`;
-      if (filters.genres.length) query += `&with_genres=${filters.genres.join(",")}`;
+      if (filters.genres.length)
+        query += `&with_genres=${filters.genres.join(",")}`;
       if (filters.minRating) query += `&vote_average.gte=${filters.minRating}`;
       if (filters.minVotes) query += `&vote_count.gte=${filters.minVotes}`;
       if (filters.year) query += `&primary_release_year=${filters.year}`;
 
       const response = await fetch(
-        `https://api.themoviedb.org/3/discover/movie?language=vi&page=${pageNum}${query}&api_key=${import.meta.env.VITE_API_KEY}`, options
+        `https://api.themoviedb.org/3/discover/movie?language=vi&page=${pageNum}${query}&api_key=${
+          import.meta.env.VITE_API_KEY
+        }`,
+        options
       );
       if (!response.ok) throw new Error("Failed to fetch movies");
 
@@ -496,7 +500,7 @@ export function useMoviesFilter(selectedGenre, filters) {
     } catch (error) {
       console.error("Error fetching movies:", error);
     } finally {
-      setLoading(false);
+      setTimeout(() => setLoading(false), 1000);
     }
   };
 
@@ -532,7 +536,8 @@ export function useTvFilter(selectedGenre, filters) {
   // Cập nhật URL dựa trên bộ lọc
   useEffect(() => {
     const params = new URLSearchParams();
-    if (filters.genres.length) params.set("genres", filters.genres.join(","));
+    if (filters.tvGenres.length)
+      params.set("tvGenres", filters.tvGenres.join(","));
     if (filters.minRating) params.set("minRating", filters.minRating);
     if (filters.minVotes) params.set("minVotes", filters.minVotes);
     if (filters.year) params.set("year", filters.year);
@@ -545,13 +550,16 @@ export function useTvFilter(selectedGenre, filters) {
     setLoading(true);
     try {
       let query = `&with_genres=${selectedGenre}`;
-      if (filters.genres.length) query += `&with_genres=${filters.genres.join(",")}`;
+      if (filters.tvGenres.length)
+        query += `&with_genres=${filters.tvGenres.join(",")}`;
       if (filters.minRating) query += `&vote_average.gte=${filters.minRating}`;
       if (filters.minVotes) query += `&vote_count.gte=${filters.minVotes}`;
       if (filters.year) query += `&first_air_date_year=${filters.year}`;
 
       const response = await fetch(
-        `https://api.themoviedb.org/3/discover/tv?language=vi&page=${pageNum}${query}&api_key=${import.meta.env.VITE_API_KEY}`,
+        `https://api.themoviedb.org/3/discover/tv?language=vi&page=${pageNum}${query}&api_key=${
+          import.meta.env.VITE_API_KEY
+        }`,
         options
       );
 
@@ -588,5 +596,3 @@ export function useTvFilter(selectedGenre, filters) {
 
   return { tvs, loading, page, totalPages, nextPage, prevPage };
 }
-
-

@@ -1,13 +1,12 @@
 import { useEffect, useRef, useState } from "react";
-// import { useMoviesByGenre } from "../../Servives/GlobalApi";
 import { FaStar } from "react-icons/fa";
 import { HiOutlinePlayCircle } from "react-icons/hi2";
 import { HiHeart, HiOutlineHeart } from "react-icons/hi";
 import { useNavigate } from "react-router-dom";
 import { useFavoriteMovies, useFetchMovieLists } from "../../Servives/Auth";
-import { TailSpin } from "react-loader-spinner";
 import DropdownLists from "../../Components/ui/DropdownLists";
 import { MdFormatListBulletedAdd } from "react-icons/md";
+import LoadingComponent from "../../Components/common/LoadingComponent";
 
 function MovieList({ movies, loading }) {
   const sessionId = localStorage.getItem("sessionId");
@@ -47,9 +46,7 @@ function MovieList({ movies, loading }) {
 
   if (loading || LoadingMovieList) {
     return (
-      <div className="flex justify-center items-center h-screen">
-        <TailSpin height="80" width="80" color="#4A90E2" />
-      </div>
+      <LoadingComponent/>
     );
   }
   const handleToggle = (id) => {

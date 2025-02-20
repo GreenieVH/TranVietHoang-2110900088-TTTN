@@ -12,6 +12,7 @@ function PopularMovies({
   dataPopular,
   lists,
   setLists,
+  movies
 }) {
   const navigate = useNavigate();
   const [showDropdown, setShowDropdown] = useState(null);

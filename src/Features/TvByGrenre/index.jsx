@@ -1,111 +1,72 @@
-import { FaStar } from "react-icons/fa";
-import { HiHeart, HiOutlineHeart, HiOutlinePlayCircle } from "react-icons/hi2";
-import { useNavigate } from "react-router-dom";
-import { useTVByGenre } from "../../Servives/GlobalApi";
-import { useFavoriteMovies, useFollowlist } from "../../Servives/Auth";
-import { TailSpin } from "react-loader-spinner";
+import { useMemo, useState } from "react";
+import { useTvFilter, useTvGenres } from "../../Servives/GlobalApi";
+import FilterTv from "../FilterTv";
 import ChangePage from "../../Components/common/changePage";
-import { MdFormatListBulletedAdd } from "react-icons/md";
+import TvList from "../TvList";
 
 function TvByGrenre({ selectedGenre, genreName }) {
-  const navigate = useNavigate();
-  const sessionId = localStorage.getItem("sessionId");
-  const accountId = localStorage.getItem("accountId");
-  const { tvs, loading, page, totalPages, nextPage, prevPage } =
-    useTVByGenre(selectedGenre);
-  const { toggleFollowlist } = useFollowlist("tv");
-  const { favorites, handleFavoriteToggle } = useFavoriteMovies(
-    sessionId,
-    accountId,
-    "tv"
+  const [filterVisible, setFilterVisible] = useState(false);
+  const { tvGenres } = useTvGenres(); // Lấy danh sách thể loại
+  const [filters, setFilters] = useState({
+    tvGenres: [],
+    minRating: 0,
+    minVotes: 0,
+    year: "",
+  });
+  const { tvs, loading, page, totalPages, nextPage, prevPage } = useTvFilter(
+    selectedGenre,
+    filters
   );
 
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center h-screen">
-        <TailSpin height="80" width="80" color="#4A90E2" />
-      </div>
-    );
-  }
-
+  // Cập nhật tiêu đề dựa trên thể loại đã chọn
+  const gName = useMemo(() => {
+    if (filters.tvGenres.length === 0) return genreName;
+    return tvGenres
+      .filter((g) => filters.tvGenres.includes(g.id))
+      .map((g) => g.name)
+      .join(" + ");
+  }, [filters.tvGenres, tvGenres]);
   return (
-    <div className="p-4">
-      <h3 className="text-2xl font-bold mb-4">{genreName}</h3>
-      {/* Nút Load More */}
-      <ChangePage
-        page={page}
-        totalPages={totalPages}
-        prevPage={prevPage}
-        nextPage={nextPage}
-      />
-      {/* Hiển thị phim */}
-      <div className="mt-4 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-        {!tvs.length ? (
-          <p>Loading...</p>
-        ) : (
-          tvs.map((tv) => (
-            <div
-              key={tv.id}
-              className="relative bg-gray-800 text-white rounded-md p-2 text-center hover:bg-gray-600 transition-all"
-            >
-              <div className="relative group overflow-hidden">
-                {/* Ảnh phim */}
-                <img
-                  src={`${import.meta.env.VITE_IMG_URL}${tv.poster_path}`}
-                  alt={tv.title}
-                  className="w-full h-[300px] object-cover rounded-md mb-2 transition-transform duration-300 ease-in-out group-hover:scale-105"
-                />
-                {/* Điểm đánh giá */}
-                <div className="absolute top-2 left-2 bg-black bg-opacity-70 text-yellow-400 flex items-center gap-1 px-2 py-1 rounded-md shadow-md">
-                  <FaStar />
-                  <span className="text-sm font-semibold">
-                    {tv.vote_average.toFixed(1)}
-                  </span>
-                </div>
-                {/* Nút HiOutlinePlayCircle */}
-                <div
-                  className="absolute inset-0 flex justify-center items-center bg-black bg-opacity-30 opacity-0 group-hover:opacity-100 transition-opacity duration-300 cursor-pointer"
-                  onClick={() => navigate(`/tvserie/${tv.id}`)}
-                >
-                  <HiOutlinePlayCircle className="text-white text-5xl" />
-                </div>
-              </div>
-              <h4 className="font-bold">{tv.name}</h4>
-              <p className="text-gray-500">
-                {tv.first_air_date
-                  ? new Date(tv.first_air_date).toLocaleDateString("vi-VN", {
-                      year: "numeric",
-                      month: "long",
-                      day: "numeric",
-                    })
-                  : "N/A"}
-              </p>
-              {/* Icon yêu thích */}
-              <div
-                className="absolute top-2 right-2 text-white cursor-pointer"
-                onClick={() => handleFavoriteToggle(tv.id)}
-              >
-                {favorites.has(tv.id, "tv") ? (
-                  <HiHeart className="text-red-500 text-3xl" />
-                ) : (
-                  <HiOutlineHeart className="text-red-500 text-3xl" />
-                )}
-              </div>
-              {/* Icon them vao danh sach */}
-              <div className="absolute top-10 right-2 text-white cursor-pointer" onClick={()=>toggleFollowlist(tv.id)}>
-                <MdFormatListBulletedAdd className="text-3xl" />
-              </div>
-            </div>
-          ))
-        )}
+    <div className="p-4 min-h-screen">
+      <div className="flex justify-between items-center mb-6">
+        <h3 className="text-2xl font-bold">
+          Danh sách phim thuộc thể loại: {gName}
+        </h3>
+        <button
+          className="bg-[#032541] w-28 text-white px-4 py-2 rounded-md"
+          onClick={() => setFilterVisible(true)}
+        >
+          Lọc Phim
+        </button>
       </div>
+
+      {filterVisible && (
+        <FilterTv
+          tvGenres={tvGenres}
+          filters={filters}
+          setFilters={setFilters}
+          closeFilter={() => setFilterVisible(false)}
+        />
+      )}
       {/* Nút Load More */}
-      <ChangePage
-        page={page}
-        totalPages={totalPages}
-        prevPage={prevPage}
-        nextPage={nextPage}
-      />
+      {tvs.length > 0 && (
+        <ChangePage
+          page={page}
+          totalPages={totalPages}
+          prevPage={prevPage}
+          nextPage={nextPage}
+        />
+      )}
+      <TvList tvs={tvs} loading={loading} />
+      {/* Nút Load More */}
+      {tvs.length > 0 && (
+        <ChangePage
+          page={page}
+          totalPages={totalPages}
+          prevPage={prevPage}
+          nextPage={nextPage}
+        />
+      )}
     </div>
   );
 }
