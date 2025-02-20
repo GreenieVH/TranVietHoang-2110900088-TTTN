@@ -6,22 +6,30 @@ import {
   useTvTrailer,
 } from "../../Servives/GlobalApi";
 import { TailSpin } from "react-loader-spinner";
-import { HiMiniPlay } from "react-icons/hi2";
+import { HiHeart, HiMiniPlay, HiOutlineHeart } from "react-icons/hi2";
 import { GoDotFill } from "react-icons/go";
 import { Rating } from "../../Components/common/Rating";
 import { FaRegDotCircle } from "react-icons/fa";
 import Remark from "../../Components/ui/Remark";
+import RatingComponent from "../../Components/ui/RatingComponent";
+import { useFavoriteList, useFavoriteMovies } from "../../Servives/Auth";
 
 function TvDetail() {
-  const { id } = useParams(); // Lấy ID TV series từ URL
+  const accountId = localStorage.getItem("accountId");
+  const sessionId = localStorage.getItem("sessionId");
+  const { id } = useParams();
   const { tv, loading: loadingDetail } = useTvDetail(id); // Sử dụng hook để lấy thông tin TV series
   const { trailerKey, loading: loadingTrailer } = useTvTrailer(id);
-  const [showTrailer, setShowTrailer] = useState(false); // State để điều khiển việc hiển thị trailer
+  const [showTrailer, setShowTrailer] = useState(false);
   const { tvCredits, loading } = useTvCredits(id);
   const [activeTab, setActiveTab] = useState("tv");
   const [visibleCount, setVisibleCount] = useState(10);
+  const { handleFavoriteToggle, favoritesUpdated } = useFavoriteMovies(
+    sessionId,
+    accountId
+  );
+  const { tvShows } = useFavoriteList(accountId, sessionId, 1, favoritesUpdated);
   const displayNames = new Intl.DisplayNames(["vi"], { type: "language" });
-
 
   if (loadingDetail || loadingTrailer || loading) {
     return (
@@ -46,7 +54,9 @@ function TvDetail() {
   const screenplay = tvCredits?.crew?.find(
     (member) => member.job === "Screenplay" || member.job === "Writer"
   );
-
+  const isFavorite = tvShows.some(
+    (favMovie) => favMovie.id === tv.id
+  );
   return (
     <div className="relative min-h-screen text-white ">
       <div
@@ -95,6 +105,17 @@ function TvDetail() {
                   Xem Phim
                 </button>
               </div>
+              {/* Icon yêu thích */}
+              <div
+                className="absolute top-3 right-3 text-white cursor-pointer"
+                onClick={() => handleFavoriteToggle(tv.id, isFavorite,"tv")}
+              >
+                {isFavorite ? (
+                  <HiHeart className="text-red-500 text-[40px]" />
+                ) : (
+                  <HiOutlineHeart className="text-white text-[40px]" />
+                )}
+              </div>
             </div>
           </div>
 
@@ -132,14 +153,24 @@ function TvDetail() {
               <div className="bg-[#131520] flex size-16 items-center rounded-full ">
                 <Rating score={tv.vote_average} r={40} strokew="0.6rem" />
               </div>
-              <p>
-                (Đánh giá {tv.vote_average.toFixed(1)}/10 từ {tv.vote_count}{" "}
-                thành viên)
-              </p>
+              <div className="">
+                <RatingComponent
+                  isRate={true}
+                  id={tv.id}
+                  mediaType={"tv"}
+                  detail={true}
+                />
+                <p>
+                  (Đánh giá {tv.vote_average.toFixed(1)}/10 từ {tv.vote_count}{" "}
+                  thành viên)
+                </p>
+              </div>
             </div>
             <p className="text-gray-300 text-lg italic mb-2">{tv.tagline}</p>
             <h2 className="text-xl font-semibold mb-2">Mô tả:</h2>
-            <p className="leading-relaxed mb-6">{tv.overview || "Không có mô tả"}</p>
+            <p className="leading-relaxed mb-6">
+              {tv.overview || "Không có mô tả"}
+            </p>
             <div className="flex justify-around border-t border-[gray] pt-4">
               <div className="mb-4">
                 <h2 className="text-xl font-semibold mb-2">Đạo diễn:</h2>
@@ -210,7 +241,7 @@ function TvDetail() {
                 <div className="flex items-center gap-2">
                   <FaRegDotCircle className="text-green-600" />
                   <span>
-                    Lịch chiếu:{" "} 
+                    Lịch chiếu:{" "}
                     {tv.next_episode_to_air?.air_date
                       ? `phát sóng tập tiếp theo vào ${new Date(
                           tv.next_episode_to_air.air_date
@@ -271,11 +302,20 @@ function TvDetail() {
                 </div>
                 <div className="flex items-center gap-2">
                   <FaRegDotCircle className="text-green-600" />
-                  <span>Ngôn ngữ: {displayNames.of(tv.original_language) || "Không xác định"}</span>
+                  <span>
+                    Ngôn ngữ:{" "}
+                    {displayNames.of(tv.original_language) || "Không xác định"}
+                  </span>
                 </div>
                 <div className="flex items-center gap-2">
                   <FaRegDotCircle className="text-green-600" />
-                  <span>Studio: {tv.production_companies.slice(0,2).map(item => item.name).join(", ") }</span>
+                  <span>
+                    Studio:{" "}
+                    {tv.production_companies
+                      .slice(0, 2)
+                      .map((item) => item.name)
+                      .join(", ")}
+                  </span>
                 </div>
                 <div className="flex items-center gap-2">
                   <FaRegDotCircle className="text-green-600" />

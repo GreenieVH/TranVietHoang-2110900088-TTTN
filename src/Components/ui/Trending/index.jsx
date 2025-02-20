@@ -1,15 +1,22 @@
 import TrendingItem from "./TrendingItem";
 import Slider from "react-slick";
 import { TailSpin } from "react-loader-spinner";
+import { useDelayedLoadings } from "../../../hooks/DelayedLoading";
+import LoadingComponent from "../../common/LoadingComponent";
 
-function Trending({dataTrending,lists,setLists,Loadingtrending,LoadingMovieList}) {
-
-  if (Loadingtrending || LoadingMovieList)
-    return (
-      <div className="flex justify-center items-center h-screen">
-        <TailSpin height="80" width="80" color="#4A90E2" />
-      </div>
-    );
+function Trending({
+  dataTrending,
+  lists,
+  setLists,
+  Loadingtrending,
+  LoadingMovieList,
+  movies,
+  handleFavoriteToggle,
+  refetch,
+}) {
+  const showLoading = useDelayedLoadings(
+    [Loadingtrending, LoadingMovieList],0
+  );
 
   const settings = {
     infinite: true,
@@ -33,6 +40,9 @@ function Trending({dataTrending,lists,setLists,Loadingtrending,LoadingMovieList}
     ],
   };
 
+  if (showLoading) {
+    return <LoadingComponent />;
+  }
   return (
     <div className="relative z-10 ">
       <h3 className="text-2xl font-bold my-2 px-4 py-4">Trending</h3>
@@ -41,17 +51,25 @@ function Trending({dataTrending,lists,setLists,Loadingtrending,LoadingMovieList}
           <div>Loading...</div>
         ) : (
           <Slider {...settings}>
-            {dataTrending.map((item, index) => (
-              <TrendingItem
-                key={index}
-                title={item.title}
-                backdrop_path={item.poster_path}
-                vote_average={item.vote_average}
-                id={item.id}
-                lists={lists}
-                setLists={setLists}
-              />
-            ))}
+            {dataTrending.map((item, index) => {
+              const isFavorite = movies.some(
+                (favMovie) => favMovie.id === item.id
+              );
+              return (
+                <TrendingItem
+                  key={index}
+                  title={item.title}
+                  backdrop_path={item.poster_path}
+                  vote_average={item.vote_average}
+                  id={item.id}
+                  lists={lists}
+                  setLists={setLists}
+                  handleFavoriteToggle={handleFavoriteToggle}
+                  isFavorite={isFavorite}
+                  refetch={refetch}
+                />
+              );
+            })}
           </Slider>
         )}
       </div>

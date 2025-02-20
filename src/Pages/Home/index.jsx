@@ -17,13 +17,12 @@ function Home() {
     lists,
     loading: LoadingMovieList,
     setLists,
+    refetch
   } = useFetchMovieLists(sessionId, accountId);
   const { dataTrending, loading: Loadingtrending } = useGetTrending();
-  const { favorites, handleFavoriteToggle } = useFavoriteMovies(
-    sessionId,
-    accountId
-  );
-  const { movies, tvShows, loading, error } = useFavoriteList();
+  const { handleFavoriteToggle, favoritesUpdated } = useFavoriteMovies(sessionId, accountId);
+  const { movies } = useFavoriteList(accountId, sessionId, 1, favoritesUpdated);
+
   const { dataPopular } = useGetPopular();
 
   return (
@@ -34,10 +33,12 @@ function Home() {
         Loadingtrending={Loadingtrending}
         lists={lists}
         setLists={setLists}
+        refetch={refetch}
         LoadingMovieList={LoadingMovieList}
+        movies={movies}
+        handleFavoriteToggle={handleFavoriteToggle}
       />
       <PopularMovies
-        favorites={favorites}
         handleFavoriteToggle={handleFavoriteToggle}
         dataPopular={dataPopular}
         lists={lists}

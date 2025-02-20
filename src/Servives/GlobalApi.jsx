@@ -11,7 +11,7 @@ const options = {
 
 export function useGetPopular() {
   const [dataPopular, setDataPopular] = useState([]);
-  const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
   const url = "https://api.themoviedb.org/3/movie/popular?language=vi&page=1";
 
   const fetchPopular = async () => {
@@ -40,7 +40,7 @@ export function useGetPopular() {
 
 export function useGetTrending() {
   const [dataTrending, setDataTrending] = useState([]);
-  const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
 
   const url =
     "https://api.themoviedb.org/3/trending/movie/week?language=vi&page=1";
@@ -122,7 +122,7 @@ export function useTvGenres() {
 
 export function useMoviesByGenre(genreId) {
   const [movies, setMovies] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
@@ -174,7 +174,7 @@ export function useMoviesByGenre(genreId) {
 
 export function useTVByGenre(genreId) {
   const [tvs, setTvs] = useState([]);
-  const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
@@ -226,7 +226,7 @@ export function useTVByGenre(genreId) {
 
 export function useMovieDetail(movieId) {
   const [movie, setMovie] = useState(null);
-  const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
 
   const fetchMovieDetail = async () => {
     try {
@@ -255,7 +255,7 @@ export function useMovieDetail(movieId) {
 
 export function useTvDetail(movieId) {
   const [tv, setTv] = useState(null);
-  const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
 
   const fetchTvDetail = async () => {
     try {
@@ -284,7 +284,7 @@ export function useTvDetail(movieId) {
 
 export function useMovieTrailer(movieId) {
   const [trailerKey, setTrailerKey] = useState(null);
-  const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
 
   const fetchMovieTrailer = async () => {
     try {
@@ -320,7 +320,7 @@ export function useMovieTrailer(movieId) {
 
 export function useTvTrailer(tvId) {
   const [trailerKey, setTrailerKey] = useState(null);
-  const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
 
   const fetchTvTrailer = async () => {
     try {
@@ -402,7 +402,7 @@ export function useSearch(locationSearch) {
 
 export function useMovieCredits(movie_id) {
   const [movieCredits, setMovieCredits] = useState([]);
-  const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
   const url = `https://api.themoviedb.org/3/movie/${movie_id}/credits`;
 
   const fetchMovieCredits = async () => {
@@ -428,9 +428,10 @@ export function useMovieCredits(movie_id) {
   // console.log("MovieCredits:", movieCredits);
   return { movieCredits, loading };
 }
+
 export function useTvCredits(tv_id) {
   const [tvCredits, setTvCredits] = useState([]);
-  const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
   const url = `https://api.themoviedb.org/3/tv/${tv_id}/credits`;
 
   const fetchTvCredits = async () => {
@@ -459,7 +460,7 @@ export function useTvCredits(tv_id) {
 
 export function useMoviesFilter(selectedGenre, filters) {
   const [movies, setMovies] = useState([]);
-  const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [searchParams, setSearchParams] = useSearchParams();
@@ -528,7 +529,7 @@ export function useMoviesFilter(selectedGenre, filters) {
 
 export function useTvFilter(selectedGenre, filters) {
   const [tvs, setTvs] = useState([]);
-  const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [searchParams, setSearchParams] = useSearchParams();

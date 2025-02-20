@@ -13,17 +13,13 @@ function TrendingItem({
   id,
   lists,
   setLists,
+  handleFavoriteToggle,
+  isFavorite,
+  refetch
 }) {
-  const sessionId = localStorage.getItem("sessionId");
-  const accountId = localStorage.getItem("accountId");
   const dropdownRef = useRef(null);
   const sessionID = localStorage.getItem("sessionId");
   const [showDropdown, setShowDropdown] = useState(false);
-
-  const { favorites, handleFavoriteToggle } = useFavoriteMovies(
-    sessionId,
-    accountId
-  );
 
   const handleToggle = () => {
     if (!sessionID) {
@@ -64,9 +60,9 @@ function TrendingItem({
         {/* Icon yêu thích */}
         <div
           className="absolute top-2 right-2 text-white cursor-pointer"
-          onClick={() => handleFavoriteToggle(id)}
+          onClick={() => handleFavoriteToggle(id,isFavorite)}
         >
-          {favorites.has(id) ? (
+          {isFavorite ? (
             <HiHeart className="text-red-500 text-3xl" />
           ) : (
             <HiOutlineHeart className="text-gray-300 text-3xl" />
@@ -86,6 +82,7 @@ function TrendingItem({
             lists={lists}
             setLists={setLists}
             setShowDropdown={setShowDropdown}
+            refetch={refetch}
           />
         </div>
       </div>

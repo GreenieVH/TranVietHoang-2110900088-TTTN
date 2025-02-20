@@ -6,13 +6,13 @@ export default function LoadingComponent() {
     opacity: 1,
     transform: "scale(1)",
     from: { opacity: 0, transform: "scale(0.9)" },
-    config: { tension: 200, friction: 15 ,mass:1}, 
+    config: { tension: 200, friction: 15 }, 
   });
 
   return (
     <animated.div
       style={fadeIn}
-      className="flex justify-center items-center  h-svh"
+      className="flex justify-center items-center h-screen"
     >
       <TailSpin height="100" width="100" color="#4A90E2" />
     </animated.div>

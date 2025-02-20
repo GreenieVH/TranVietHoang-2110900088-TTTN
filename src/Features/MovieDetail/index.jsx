@@ -5,18 +5,27 @@ import { useMovieTrailer } from "../../Servives/GlobalApi";
 import { TailSpin } from "react-loader-spinner";
 import { GoDotFill } from "react-icons/go";
 import { Rating } from "../../Components/common/Rating";
-import { HiMiniPlay } from "react-icons/hi2";
+import { HiHeart, HiMiniPlay, HiOutlineHeart } from "react-icons/hi2";
 import { FaRegDotCircle } from "react-icons/fa";
 import Remark from "../../Components/ui/Remark";
+import RatingComponent from "../../Components/ui/RatingComponent";
+import { useFavoriteList, useFavoriteMovies } from "../../Servives/Auth";
 
 function MovieDetail() {
-  const { id } = useParams(); // Lấy ID phim từ URL
-  const { movie, loading: loadingDetail } = useMovieDetail(id); // Sử dụng hook để lấy thông tin phim
-  const { trailerKey, loading: loadingTrailer } = useMovieTrailer(id); // Sử dụng hook để lấy trailer
-  const [showTrailer, setShowTrailer] = useState(false); // State để điều khiển việc hiển thị trailer
+  const accountId = localStorage.getItem("accountId");
+  const sessionId = localStorage.getItem("sessionId");
+  const { id } = useParams();
+  const { movie, loading: loadingDetail } = useMovieDetail(id);
+  const { trailerKey, loading: loadingTrailer } = useMovieTrailer(id);
+  const [showTrailer, setShowTrailer] = useState(false);
   const { movieCredits, loading } = useMovieCredits(id);
   const [activeTab, setActiveTab] = useState("movie");
   const [visibleCount, setVisibleCount] = useState(10);
+  const { handleFavoriteToggle, favoritesUpdated } = useFavoriteMovies(
+    sessionId,
+    accountId
+  );
+  const { movies } = useFavoriteList(accountId, sessionId, 1, favoritesUpdated);
   const displayNames = new Intl.DisplayNames(["vi"], { type: "language" });
 
   if (loadingDetail || loadingTrailer || loading) {
@@ -42,7 +51,7 @@ function MovieDetail() {
   const screenplay = movieCredits?.crew?.find(
     (member) => member.job === "Screenplay" || member.job === "Writer"
   );
-
+  const isFavorite = movies.some((favMovie) => favMovie.id === movie.id);
   return (
     <div className="relative min-h-screen text-white ">
       <div
@@ -91,6 +100,17 @@ function MovieDetail() {
                   Xem Phim
                 </button>
               </div>
+              {/* Icon yêu thích */}
+              <div
+                className="absolute top-3 right-3 text-white cursor-pointer"
+                onClick={() => handleFavoriteToggle(movie.id, isFavorite)}
+              >
+                {isFavorite ? (
+                  <HiHeart className="text-red-500 text-[40px]" />
+                ) : (
+                  <HiOutlineHeart className="text-white text-[40px]" />
+                )}
+              </div>
             </div>
           </div>
 
@@ -121,14 +141,22 @@ function MovieDetail() {
                   : "Không có thông tin thời lượng"}
               </p>
             </div>
-            <div className="mb-2 flex items-center gap-3">
+            <div className="mb-2 flex items-center gap-3 ">
               <div className="bg-[#131520] flex size-16 items-center rounded-full ">
                 <Rating score={movie.vote_average} r={40} strokew="0.6rem" />
               </div>
-              <p>
-                (Đánh giá {movie.vote_average.toFixed(1)}/10 từ{" "}
-                {movie.vote_count} thành viên)
-              </p>
+              <div className="flex flex-col">
+                <RatingComponent
+                  isRate={true}
+                  id={movie.id}
+                  mediaType={"movie"}
+                  detail={true}
+                />
+                <p>
+                  (Đánh giá {movie.vote_average.toFixed(1)}/10 từ{" "}
+                  {movie.vote_count} thành viên)
+                </p>
+              </div>
             </div>
             <p className="text-gray-300 text-lg italic mb-2">{movie.tagline}</p>
             <h2 className="text-xl font-semibold mb-2">Mô tả:</h2>
@@ -240,7 +268,11 @@ function MovieDetail() {
                 </div>
                 <div className="flex items-center gap-2">
                   <FaRegDotCircle className="text-green-600" />
-                  <span>Ngôn ngữ:  {displayNames.of(movie.original_language) || "Không xác định"}</span>
+                  <span>
+                    Ngôn ngữ:{" "}
+                    {displayNames.of(movie.original_language) ||
+                      "Không xác định"}
+                  </span>
                 </div>
                 <div className="flex items-center gap-2">
                   <FaRegDotCircle className="text-green-600" />
@@ -297,7 +329,6 @@ function MovieDetail() {
         </div>
       </div>
       <Remark />
-
     </div>
   );
 }

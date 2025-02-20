@@ -1,6 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 
 const API_KEY = import.meta.env.VITE_API_KEY;
+const BASE_URL = "https://api.themoviedb.org/3";
 const options = {
   method: "GET",
   headers: {
@@ -87,7 +88,7 @@ export function useTMDBAuth() {
     requestToken,
     sessionId,
     loading,
-    error,
+
     fetchRequestToken,
     createSessionId,
   };
@@ -126,16 +127,21 @@ export function useAccountDetails(sessionId) {
         setLoading(false);
       }
     };
-
+    // console.log(accountDetails)
     fetchAccountDetails();
   }, [sessionId]);
   return { accountDetails, loading, error };
 }
 
-export function useFavoriteList(accountId, sessionId, page = 1) {
+export function useFavoriteList(
+  accountId,
+  sessionId,
+  page = 1,
+  favoritesUpdated
+) {
   const [movies, setMovies] = useState([]);
   const [tvShows, setTvShows] = useState([]);
-  const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
   useEffect(() => {
@@ -178,11 +184,11 @@ export function useFavoriteList(accountId, sessionId, page = 1) {
         setLoading(false);
       }
     };
-
+    // console.log(tvShows)
     if (accountId && sessionId) {
       fetchFavorites();
     }
-  }, [accountId, sessionId, page]);
+  }, [accountId, sessionId, page, favoritesUpdated]);
 
   return { movies, tvShows, loading, error };
 }
@@ -193,22 +199,16 @@ export const useFavoriteMovies = (
   mediaType = "movie"
 ) => {
   const [error, setError] = useState();
-  const [favorites, setFavorites] = useState(new Set());
+  const [favoritesUpdated, setFavoritesUpdated] = useState(false);
 
-  // Kiểm tra danh sách yêu thích từ localStorage khi component mount
-  useEffect(() => {
-    const storedFavorites = JSON.parse(localStorage.getItem("favorites")) || [];
-    setFavorites(new Set(storedFavorites));
-  }, [sessionId, accountId]);
-
-  const handleFavoriteToggle = async (movieId) => {
+  const handleFavoriteToggle = async (movieId, isFavorite, activeTab) => {
     if (!sessionId || !accountId) {
       alert("Vui lòng đăng nhập để tiếp tục!");
       return;
     }
-
-    const isFavorite = favorites.has(movieId);
-
+    if (activeTab === "tv") {
+      mediaType = "tv";
+    }
     try {
       // Gửi request tới TMDB API để thêm hoặc xóa khỏi yêu thích
       const response = await fetch(
@@ -229,33 +229,8 @@ export const useFavoriteMovies = (
       );
       const data = await response.json();
 
-      if (data.status_code === 1) {
-        setFavorites((prevFavorites) => {
-          const newFavorites = new Set(prevFavorites);
-          if (isFavorite) {
-            newFavorites.delete(movieId); // Xóa khỏi yêu thích
-          } else {
-            newFavorites.add(movieId); // Thêm vào yêu thích
-          }
-          localStorage.setItem(
-            "favorites",
-            JSON.stringify(Array.from(newFavorites))
-          );
-          return newFavorites;
-        });
-      } else if (
-        data.status_message === "The item/record was deleted successfully."
-      ) {
-        // Xử lý khi xóa thành công (thông báo này xuất hiện khi bạn xóa khỏi yêu thích)
-        setFavorites((prevFavorites) => {
-          const newFavorites = new Set(prevFavorites);
-          newFavorites.delete(movieId); // Xóa khỏi danh sách yêu thích
-          localStorage.setItem(
-            "favorites",
-            JSON.stringify(Array.from(newFavorites))
-          ); // Cập nhật localStorage
-          return newFavorites;
-        });
+      if (data.success) {
+        setFavoritesUpdated((prev) => !prev);
       } else {
         setError(data.status_message || "Có lỗi xảy ra.");
         console.error("Lỗi khi xử lý yêu thích:", data.status_message);
@@ -264,10 +239,9 @@ export const useFavoriteMovies = (
       console.error("Có lỗi khi gửi yêu cầu:", error);
     }
   };
-
   return {
-    favorites,
     handleFavoriteToggle,
+    favoritesUpdated,
   };
 };
 
@@ -275,39 +249,39 @@ export const useFetchMovieLists = (sessionId, accountId) => {
   const [lists, setLists] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
+  const fetchLists = async () => {
     if (!sessionId || !accountId) {
       return;
     }
-    const fetchLists = async () => {
-      setLoading(true);
-      try {
-        const response = await fetch(
-          `https://api.themoviedb.org/3/account/${accountId}/lists?session_id=${sessionId}`,
-          {
-            method: "GET",
-            headers: {
-              accept: "application/json",
-              Authorization: `Bearer ${API_KEY}`,
-              "Content-Type": "application/json",
-            },
-          }
-        );
-        const data = await response.json();
-        // console.log("danh sach:",data)
-        setLists(data.results || []);
-      } catch (error) {
-        console.error("Lỗi lấy danh sách phim:", error);
-      }
+    setLoading(true);
+    try {
+      const response = await fetch(
+        `https://api.themoviedb.org/3/account/${accountId}/lists?session_id=${sessionId}`,
+        {
+          method: "GET",
+          headers: {
+            accept: "application/json",
+            Authorization: `Bearer ${API_KEY}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      const data = await response.json();
+      // console.log("danh sach:",data)
+      setLists(data.results || []);
+    } catch (error) {
+      console.error("Lỗi lấy danh sách phim:", error);
+    } finally {
       setLoading(false);
-    };
-
-    if (accountId && sessionId) {
-      fetchLists();
     }
+    
+  };
+
+  useEffect(() => {
+    fetchLists();
   }, [accountId, sessionId]); // Chạy lại nếu sessionId hoặc accountId thay đổi
 
-  return { lists, loading, setLists };
+  return { lists, loading, setLists, refetch: fetchLists };
 };
 
 export const useManageMovieLists = (
@@ -378,41 +352,40 @@ export const useFetchMoviesByList = (listId) => {
   const [movies, setMovies] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
+  const fetchMovies = async () => {
     if (!listId) return;
+    setLoading(true);
+    try {
+      const response = await fetch(
+        `https://api.themoviedb.org/3/list/${listId}?api_key=${API_KEY}&language=vi`,
+        {
+          method: "GET",
+          headers: {
+            accept: "application/json",
+            Authorization: `Bearer ${API_KEY}`,
+          },
+        }
+      );
+      const data = await response.json();
+      // console.log("Danh sách phim:", data);
+      setMovies(data || []);
+    } catch (error) {
+      console.error("Lỗi lấy danh sách phim:", error);
+      setMovies([]);
+    }
+    setLoading(false);
+  };
 
-    const fetchMovies = async () => {
-      setLoading(true);
-      try {
-        const response = await fetch(
-          `https://api.themoviedb.org/3/list/${listId}?api_key=${API_KEY}&language=vi`,
-          {
-            method: "GET",
-            headers: {
-              accept: "application/json",
-              Authorization: `Bearer ${API_KEY}`,
-            },
-          }
-        );
-        const data = await response.json();
-        // console.log("Danh sách phim:", data);
-        setMovies(data || []);
-      } catch (error) {
-        console.error("Lỗi lấy danh sách phim:", error);
-        setMovies([]);
-      }
-      setLoading(false);
-    };
-
+  useEffect(() => {
     fetchMovies();
   }, [listId]);
 
-  return { movies, loading };
+  return { movies, loading, refetch: fetchMovies };
 };
 
 export function useFollowlist(mediaType = "tv") {
   const [follows, setFollowlist] = useState([]);
-  const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
   const accountId = localStorage.getItem("accountId");
   const sessionId = localStorage.getItem("sessionId");
 
@@ -474,8 +447,8 @@ export function useFollowlist(mediaType = "tv") {
           add
             ? `${
                 mediaType === "movie" ? "Phim" : "TV Show"
-              } đã được thêm vào Watchlist!`
-            : "Đã xóa khỏi Watchlist!"
+              } đã được thêm vào danh sách theo dõi!`
+            : "Đã xóa khỏi danh sách theo dõi!"
         );
         fetchFollowlist(); // Cập nhật lại danh sách
       } else {
@@ -492,4 +465,133 @@ export function useFollowlist(mediaType = "tv") {
   // console.log(follows)
 
   return { follows, loading, toggleFollowlist };
+}
+
+export const useRemoveMovieFromList = () => {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  const removeMovie = useCallback(async (listId, movieId) => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch(`${BASE_URL}/list/${listId}/remove_item`, {
+        method: "POST",
+        headers: {
+          accept: "application/json",
+          Authorization: `Bearer ${API_KEY}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ media_id: movieId }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.status_message || "Xóa phim thất bại!");
+      }
+
+      return data; // Trả về dữ liệu phản hồi nếu cần
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  return { removeMovie, loading, error };
+};
+
+export const useDeleteList = (sessionId) => {
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  const deleteList = async (listId) => {
+    if (!listId) {
+      setError("List ID không hợp lệ.");
+      return;
+    }
+
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch(
+        `https://api.themoviedb.org/3/list/${listId}?api_key=${API_KEY}&session_id=${sessionId}`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            accept: "application/json",
+            Authorization: `Bearer ${API_KEY}`,
+          },
+        }
+      );
+
+      const data = await response.json();
+      if (!response.ok)
+        throw new Error(data.status_message || "Xóa danh sách thất bại.");
+
+      return data; // Trả về kết quả nếu cần xử lý
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return { deleteList, isLoading, error };
+};
+
+export function useRateMedia(sessionId) {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  const rateMedia = async (id, mediaType, ratingValue) => {
+    if (!sessionId) {
+      setError("Vui lòng đăng nhập để đánh giá!");
+      return;
+    }
+    
+    if (!["movie", "tv"].includes(mediaType)) {
+      setError("Loại phương tiện không hợp lệ!");
+      return;
+    }
+    
+    if (ratingValue < 0.5 || ratingValue > 10 || ratingValue % 0.5 !== 0) {
+      setError("Điểm đánh giá phải từ 0.5 đến 10 và chia hết cho 0.5!");
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch(
+        `https://api.themoviedb.org/3/${mediaType}/${id}/rating?api_key=${API_KEY}&session_id=${sessionId}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${API_KEY}`,
+          },
+          body: JSON.stringify({ value: ratingValue }),
+        }
+      );
+
+      const data = await response.json();
+      if (data.success) {
+        alert(`Đánh giá phim thành công!`);
+      } else {
+        setError(data.status_message || "Đánh giá thất bại");
+      }
+    } catch (error) {
+      setError("Có lỗi xảy ra khi gửi đánh giá!");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return { rateMedia, loading, error };
 }

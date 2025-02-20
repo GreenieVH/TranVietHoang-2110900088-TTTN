@@ -3,7 +3,7 @@ import { useTMDBAuth } from "../../Servives/Auth";
 import { TEInput, TERipple } from "tw-elements-react";
 import { Link } from "react-router-dom";
 import logo from "../../assets/Images/logo-gm.png";
-import bg_kuku from "../../assets/Images/kuku.jpg";
+import backgroundd from "../../assets/Images/backgroundd.jpg";
 
 const Login = () => {
   const [isLogin, setIsLogin] = useState(true); // Trạng thái để xác định tab hiện tại
@@ -41,7 +41,7 @@ const Login = () => {
       <section
         className="h-full w-full bg-neutral-200 dark:bg-neutral-700 max-w-screen-2xl mx-auto"
         style={{
-          backgroundImage: `url(${bg_kuku})`,
+          backgroundImage: `url(${backgroundd})`,
           backgroundSize: "cover",
           backgroundPosition: "center",
         }}
@@ -62,18 +62,16 @@ const Login = () => {
                       {/* Logo */}
                       <div className="text-center">
                         <img className="mx-auto w-48" src={logo} alt="logo" />
-                        <h4 className="mb-12 mt-1 pb-1 text-2xl font-semibold text-white">
-                          Tran Viet Hoang
-                        </h4>
+                        
                       </div>
 
                       {/* Tab Switch */}
                       <div className="flex justify-center mb-4 gap-2">
                         <button
                           onClick={toggleTab}
-                          className={`w-full px-6 py-2 text-sm font-semibold hover:border-[#E96729] focus:outline-none rounded-t-lg ${
+                          className={`w-full px-6 py-2 text-sm font-semibold hover:border-[#245479] focus:outline-none rounded-t-lg ${
                             isLogin
-                              ? "bg-[#BD428D] text-white"
+                              ? "bg-[#3376AA] text-white"
                               : "bg-white text-black"
                           }`}
                         >
@@ -81,9 +79,9 @@ const Login = () => {
                         </button>
                         <button
                           onClick={toggleTab}
-                          className={`w-full px-6 py-2 text-sm font-semibold hover:border-[#E96729] focus:outline-none rounded-t-lg ${
+                          className={`w-full px-6 py-2 text-sm font-semibold hover:border-[#245479] focus:outline-none rounded-t-lg ${
                             !isLogin
-                              ? "bg-[#BD428D] text-white"
+                              ? "bg-[#3376AA] text-white"
                               : "bg-white text-black"
                           }`}
                         >
@@ -113,7 +111,7 @@ const Login = () => {
                                 type="button"
                                 style={{
                                   background:
-                                    "linear-gradient(to right, #ee7724, #d8363a, #dd3675, #b44593)",
+                                    "linear-gradient(to right, #3376AA, #2B4E76, #001931, #000B2B)",
                                 }}
                                 onClick={handleLogin}
                               >
@@ -123,7 +121,7 @@ const Login = () => {
                           </>
                         ) : (
                           <>
-                            <p className="mb-4 font-semibold">
+                            <p className="mb-4 font-semibold text-white">
                               Tạo tài khoản mới
                             </p>
                             <input
@@ -152,7 +150,7 @@ const Login = () => {
                                 type="button"
                                 style={{
                                   background:
-                                    "linear-gradient(to right, #ee7724, #d8363a, #dd3675, #b44593)",
+                                    "linear-gradient(to right, #3376AA, #2B4E76, #001931, #031434)",
                                 }}
                               >
                                 Register
@@ -177,7 +175,7 @@ const Login = () => {
                     className="flex items-center rounded-b-lg lg:w-6/12 lg:rounded-r-lg lg:rounded-bl-none"
                     style={{
                       background:
-                        "linear-gradient(to right, rgba(238, 119, 36, 0.8), rgba(216, 54, 58, 0.8), rgba(221, 54, 117, 0.8), rgba(180, 69, 147, 0.8))",
+                        "linear-gradient(to right, rgba(51, 118, 170, 0.8),rgba(43, 78, 118, 0.8),rgba(0, 25, 49, 0.8),rgba(0, 11, 43, 0.8))",
                     }}
                   >
                     <div className="px-4 py-6 text-white md:mx-6 md:p-12">
@@ -203,7 +201,7 @@ const Login = () => {
                               href={`https://www.themoviedb.org`}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="text-blue-400 hover:text-blue-500 mr-2"
+                              className="text-[#FFA54F] hover:text-[#e08f43] mr-2"
                             >
                               Đăng nhập tài khoản trên Trang TMDB và
                             </a>

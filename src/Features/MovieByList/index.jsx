@@ -1,5 +1,11 @@
-import React from "react";
-import { useFavoriteMovies, useFetchMoviesByList } from "../../Servives/Auth";
+import React, { useRef, useState } from "react";
+import {
+  useFavoriteList,
+  useFavoriteMovies,
+  useFetchMovieLists,
+  useFetchMoviesByList,
+  useRemoveMovieFromList,
+} from "../../Servives/Auth";
 import { useNavigate, useParams } from "react-router-dom";
 import {
   HiHeart,
@@ -10,17 +16,59 @@ import {
 import { Rating } from "../../Components/common/Rating";
 import { MdFormatListBulletedAdd } from "react-icons/md";
 import { TailSpin } from "react-loader-spinner";
+import { HiX } from "react-icons/hi";
+import DropdownLists from "../../Components/ui/DropdownLists";
+import RatingComponent from "../../Components/ui/RatingComponent";
 
 function MovieByList() {
   const navigate = useNavigate();
   const sessionId = localStorage.getItem("sessionId");
   const accountId = localStorage.getItem("accountId");
+  const dropdownRef = useRef(null);
   const { listId } = useParams();
-  const { movies, loading } = useFetchMoviesByList(listId);
-  const { favorites: editFavorite, handleFavoriteToggle } = useFavoriteMovies(
+  const [showDropdown, setShowDropdown] = useState(null);
+  const [isRate, setIsRate] = useState(null);
+  const { movies, loading, refetch } = useFetchMoviesByList(listId);
+  const { handleFavoriteToggle, favoritesUpdated } = useFavoriteMovies(
     sessionId,
     accountId
   );
+  const {
+    movies: movief,
+    tvShows,
+    loading: loadingMovief,
+  } = useFavoriteList(accountId, sessionId, 1, favoritesUpdated);
+  const { removeMovie, error } = useRemoveMovieFromList();
+  const {
+    lists,
+    loading: LoadingMovieList,
+    setLists,
+  } = useFetchMovieLists(sessionId, accountId);
+
+  const handleRemove = async (movieId) => {
+    const result = await removeMovie(listId, movieId);
+    if (result) {
+      alert("Xóa phim thành công!");
+    }
+    refetch();
+  };
+
+  const handleToggle = (id) => {
+    if (!sessionId) {
+      alert("Đăng nhập để tiếp tục!");
+      return;
+    }
+    setShowDropdown((prevId) => (prevId === id ? null : id));
+  };
+
+  const handleRate = (id) => {
+    if (!sessionId) {
+      alert("Đăng nhập để tiếp tục!");
+      return;
+    }
+    setIsRate((prevId) => (prevId === id ? null : id));
+  };
+
   const handleItemClick = (item) => {
     if (item.media_type === "movie") {
       navigate(`/movie/${item.id}`); // Điều hướng đến component Movie
@@ -68,104 +116,153 @@ function MovieByList() {
       </div>
       <ul className="space-y-4 mt-4">
         {movies.items &&
-          movies.items.map((item) => (
-            <li
-              key={item.id}
-              className="flex h-[220px] items-center gap-4 border border-gray-400 rounded-xl"
-            >
-              {/* Image */}
-              <div
-                className="relative w-32 h-full overflow-hidden cursor-pointer"
-                onClick={() => handleItemClick(item)}
+          movies.items.map((item) => {
+            let isFavorite = "";
+            if (item.media_type === "tv") {
+              isFavorite = tvShows.some((favMovie) => favMovie.id === item.id);
+            } else {
+              isFavorite = movief.some((favMovie) => favMovie.id === item.id);
+            }
+            return (
+              <li
+                key={item.id}
+                className="flex h-[220px] items-center gap-4 border border-gray-400 rounded-xl"
               >
-                <img
-                  src={`${import.meta.env.VITE_IMGS_URL}${item.poster_path}`}
-                  alt={item.title}
-                  className="w-full h-full object-cover rounded-l-xl"
-                />
-                {/* HiPlay Icon */}
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <HiPlay className="text-white text-5xl bg-black bg-opacity-50 p-2 rounded-full" />
-                </div>
-              </div>
-
-              {/* Details */}
-              <div className="flex-1 pr-6">
-                <div className="flex items-center gap-4 mb-4">
-                  {/* Rating */}
-                  <div className="z-10 size-10 bg-[#11131d] flex items-center justify-center rounded-full">
-                    <Rating score={item.vote_average} strokew="0.6rem" r={40} />
+                {/* Image */}
+                <div
+                  className="relative w-32 h-full overflow-hidden cursor-pointer"
+                  onClick={() => handleItemClick(item)}
+                >
+                  <img
+                    src={`${import.meta.env.VITE_IMGS_URL}${item.poster_path}`}
+                    alt={item.title}
+                    className="w-full h-full object-cover rounded-l-xl"
+                  />
+                  {/* HiPlay Icon */}
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <HiPlay className="text-white text-5xl bg-black bg-opacity-50 p-2 rounded-full" />
                   </div>
-                  {/* Title and Date */}
-                  <div>
-                    <h2
-                      className="text-xl font-semibold cursor-pointer"
-                      onClick={() => handleItemClick(item)}
-                    >
-                      {item.title || item.name}
-                      <span className="text-gray-400 italic ml-3">
-                        ({item.original_name || item.original_title})
-                      </span>
-                    </h2>
-                    <p className="text-gray-500">
-                      Ngày phát hành:{" "}
-                      {item.release_date
-                        ? new Date(
-                            item.release_date || item.first_air_date
-                          ).toLocaleDateString("vi-VN", {
-                            year: "numeric",
-                            month: "long",
-                            day: "numeric",
-                          })
-                        : new Date(item.first_air_date).toLocaleDateString(
-                            "vi-VN",
-                            {
+                </div>
+
+                {/* Details */}
+                <div className="flex-1 pr-6">
+                  <div className="flex items-center gap-4 mb-4">
+                    {/* Rating */}
+                    <div className="z-10 size-10 bg-[#11131d] flex items-center justify-center rounded-full">
+                      <Rating
+                        score={item.vote_average}
+                        strokew="0.6rem"
+                        r={40}
+                      />
+                    </div>
+                    {/* Title and Date */}
+                    <div>
+                      <h2
+                        className="text-xl font-semibold cursor-pointer"
+                        onClick={() => handleItemClick(item)}
+                      >
+                        {item.title || item.name}
+                        <span className="text-gray-400 italic ml-3">
+                          ({item.original_name || item.original_title})
+                        </span>
+                      </h2>
+                      <p className="text-gray-500">
+                        Ngày phát hành:{" "}
+                        {item.release_date
+                          ? new Date(
+                              item.release_date || item.first_air_date
+                            ).toLocaleDateString("vi-VN", {
                               year: "numeric",
                               month: "long",
                               day: "numeric",
-                            }
-                          )}
-                    </p>
-                  </div>
-                </div>
-
-                <p className="mt-2 text-white line-clamp-3">
-                  {item.overview || "Không có mô tả"}
-                </p>
-
-                {/* Buttons */}
-                <div className="flex gap-2 mt-4">
-                  <div className="flex gap-2 items-center">
-                    <div className="p-2 rounded-full text-white hover:bg-[#212536] border-[gray] border">
-                      <HiOutlineStar className="text-2xl" />
+                            })
+                          : new Date(item.first_air_date).toLocaleDateString(
+                              "vi-VN",
+                              {
+                                year: "numeric",
+                                month: "long",
+                                day: "numeric",
+                              }
+                            )}
+                      </p>
                     </div>
-                    <div className="text-base font-medium">Đánh giá!</div>
                   </div>
-                  <div className="flex gap-2 items-center">
+
+                  <p className="mt-2 text-white line-clamp-3">
+                    {item.overview || "Không có mô tả"}
+                  </p>
+
+                  {/* Buttons */}
+                  <div className="flex gap-2 mt-4">
+                    <div className="flex gap-2 items-center">
                     <div
-                      className="p-2 rounded-full text-white hover:bg-[#212536] border-[gray] border"
-                      onClick={() => handleFavoriteToggle(item.id)}
+                      className="p-2 relative rounded-full text-white hover:bg-[#212536] cursor-pointer border-[gray] border"
+                      onClick={() => handleRate(item.id)}
                     >
-                      {editFavorite.has(item.id) ? (
-                        <HiHeart className="text-red-500 text-2xl" />
-                      ) : (
-                        <HiOutlineHeart className="text-gray-300 text-2xl" />
-                      )}
+                      <HiOutlineStar className="text-2xl" />
+                      <RatingComponent
+                        isRate={isRate === item.id}
+                        id={item.id}
+                        mediaType={"movie"}
+                      />
                     </div>
-                    <div className="text-base font-medium">Yêu thích</div>
-                  </div>
-                  <div className="flex gap-2 items-center">
-                    <div className="p-2 rounded-full text-white hover:bg-[#212536] border-[gray] border">
-                      <MdFormatListBulletedAdd className="text-2xl" />
+                      <div className="text-base font-medium">Đánh giá!</div>
                     </div>
-                    <div className="text-base font-medium">
-                      Thêm vào danh sách
+                    <div className="flex gap-2 items-center">
+                      <div
+                        className="p-2 rounded-full text-white hover:bg-[#212536] cursor-pointer border-[gray] border"
+                        onClick={() =>
+                          handleFavoriteToggle(
+                            item.id,
+                            isFavorite,
+                            item.media_type
+                          )
+                        }
+                      >
+                        {isFavorite ? (
+                          <HiHeart className="text-red-500 text-2xl" />
+                        ) : (
+                          <HiOutlineHeart className="text-gray-300 text-2xl" />
+                        )}
+                      </div>
+                      <div className="text-base font-medium">Yêu thích</div>
+                    </div>
+                    <div className="flex gap-2 items-center">
+                      <div
+                        className="p-2 relative rounded-full text-white hover:bg-[#212536] cursor-pointer border-[gray] border"
+                        onClick={() => handleToggle(item.id)}
+                      >
+                        <MdFormatListBulletedAdd className="text-2xl" />
+                        <div
+                          ref={dropdownRef}
+                          className="dropdown-content absolute top-0 left-[120%] w-[300px]"
+                        >
+                          <DropdownLists
+                            showDropdown={showDropdown === item.id}
+                            id={item.id}
+                            lists={lists}
+                            setLists={setLists}
+                          />
+                        </div>
+                      </div>
+                      <div className="text-base font-medium">
+                        Thêm vào danh sách
+                      </div>
+                    </div>
+                    <div className="flex gap-2 items-center">
+                      <div
+                        className="p-2 cursor-pointer rounded-full text-white hover:bg-[#212536] border-[gray] border"
+                        onClick={() => handleRemove(item.id)}
+                      >
+                        <HiX className="text-2xl" />
+                      </div>
+                      <div className="text-base font-medium">Xóa</div>
                     </div>
                   </div>
                 </div>
-              </div>
-            </li>
-          ))}
+              </li>
+            );
+          })}
       </ul>
     </div>
   );

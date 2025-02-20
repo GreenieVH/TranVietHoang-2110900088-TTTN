@@ -6,18 +6,32 @@ import {
 } from "react-icons/hi2";
 import { HiX } from "react-icons/hi";
 import { useNavigate } from "react-router-dom";
-import { useFavoriteMovies, useFollowlist } from "../../Servives/Auth";
+import {
+  useFavoriteList,
+  useFavoriteMovies,
+  useFollowlist,
+} from "../../Servives/Auth";
 import { Rating } from "../../Components/common/Rating";
 import { MdFormatListBulletedAdd } from "react-icons/md";
 import { TailSpin } from "react-loader-spinner";
+import RatingComponent from "../../Components/ui/RatingComponent";
+import { useState } from "react";
 
 function FollowList() {
   const navigate = useNavigate();
   const sessionId = localStorage.getItem("sessionId");
   const accountId = localStorage.getItem("accountId");
-  const { favorites: editFavorite, handleFavoriteToggle } = useFavoriteMovies(
+  const [isRate, setIsRate] = useState(null);
+  const { handleFavoriteToggle, favoritesUpdated } = useFavoriteMovies(
     sessionId,
-    accountId
+    accountId,
+    "tv"
+  );
+  const { tvShows, loading: loadingMovief } = useFavoriteList(
+    accountId,
+    sessionId,
+    1,
+    favoritesUpdated
   );
   const { follows, loading, toggleFollowlist } = useFollowlist("tv");
   const handleItemClick = (item) => {
@@ -26,6 +40,13 @@ function FollowList() {
     } else {
       navigate(`/tvserie/${item.id}`); // Điều hướng đến component TV Series
     }
+  };
+  const handleRate = (id) => {
+    if (!sessionId) {
+      alert("Đăng nhập để tiếp tục!");
+      return;
+    }
+    setIsRate((prevId) => (prevId === id ? null : id));
   };
   if (loading)
     return (
@@ -63,113 +84,124 @@ function FollowList() {
       </div>
       <ul className="space-y-4 mt-4">
         {follows &&
-          follows.map((item) => (
-            <li
-              key={item.id}
-              className="flex h-[220px] items-center gap-4 border border-gray-400 rounded-xl"
-            >
-              {/* Image */}
-              <div
-                className="relative w-32 h-full overflow-hidden cursor-pointer"
-                onClick={() => handleItemClick(item)}
+          follows.map((item) => {
+            const isFavorite = tvShows.some(
+              (favMovie) => favMovie.id === item.id
+            );
+            return (
+              <li
+                key={item.id}
+                className="flex h-[220px] items-center gap-4 border border-gray-400 rounded-xl"
               >
-                <img
-                  src={`${import.meta.env.VITE_IMGS_URL}${item.poster_path}`}
-                  alt={item.title}
-                  className="w-full h-full object-cover rounded-l-xl"
-                />
-                {/* HiPlay Icon */}
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <HiPlay className="text-white text-5xl bg-black bg-opacity-50 p-2 rounded-full" />
-                </div>
-              </div>
-
-              {/* Details */}
-              <div className="flex-1 pr-6">
-                <div className="flex items-center gap-4 mb-4">
-                  {/* Rating */}
-                  <div className="z-10 size-10 bg-[#11131d] flex items-center justify-center rounded-full">
-                    <Rating score={item.vote_average} strokew="0.6rem" r={40} />
+                {/* Image */}
+                <div
+                  className="relative w-32 h-full overflow-hidden cursor-pointer"
+                  onClick={() => handleItemClick(item)}
+                >
+                  <img
+                    src={`${import.meta.env.VITE_IMGS_URL}${item.poster_path}`}
+                    alt={item.title}
+                    className="w-full h-full object-cover rounded-l-xl"
+                  />
+                  {/* HiPlay Icon */}
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <HiPlay className="text-white text-5xl bg-black bg-opacity-50 p-2 rounded-full" />
                   </div>
-                  {/* Title and Date */}
-                  <div>
-                    <h2
-                      className="text-xl font-semibold cursor-pointer"
-                      onClick={() => handleItemClick(item)}
-                    >
-                      {item.title || item.name}
-                      <span className="text-gray-400 italic ml-3">
-                        ({item.original_name || item.original_title})
-                      </span>
-                    </h2>
-                    <p className="text-gray-500">
-                      Ngày phát hành:{" "}
-                      {item.release_date
-                        ? new Date(
-                            item.release_date || item.first_air_date
-                          ).toLocaleDateString("vi-VN", {
-                            year: "numeric",
-                            month: "long",
-                            day: "numeric",
-                          })
-                        : new Date(item.first_air_date).toLocaleDateString(
-                            "vi-VN",
-                            {
+                </div>
+
+                {/* Details */}
+                <div className="flex-1 pr-6">
+                  <div className="flex items-center gap-4 mb-4">
+                    {/* Rating */}
+                    <div className="z-10 size-10 bg-[#11131d] flex items-center justify-center rounded-full">
+                      <Rating
+                        score={item.vote_average}
+                        strokew="0.6rem"
+                        r={40}
+                      />
+                    </div>
+                    {/* Title and Date */}
+                    <div>
+                      <h2
+                        className="text-xl font-semibold cursor-pointer"
+                        onClick={() => handleItemClick(item)}
+                      >
+                        {item.title || item.name}
+                        <span className="text-gray-400 italic ml-3">
+                          ({item.original_name || item.original_title})
+                        </span>
+                      </h2>
+                      <p className="text-gray-500">
+                        Ngày phát hành:{" "}
+                        {item.release_date
+                          ? new Date(
+                              item.release_date || item.first_air_date
+                            ).toLocaleDateString("vi-VN", {
                               year: "numeric",
                               month: "long",
                               day: "numeric",
-                            }
-                          )}
-                    </p>
+                            })
+                          : new Date(item.first_air_date).toLocaleDateString(
+                              "vi-VN",
+                              {
+                                year: "numeric",
+                                month: "long",
+                                day: "numeric",
+                              }
+                            )}
+                      </p>
+                    </div>
+                  </div>
+
+                  <p className="mt-2 text-white line-clamp-3">
+                    {item.overview || "Không có mô tả"}
+                  </p>
+
+                  {/* Buttons */}
+                  <div className="flex gap-2 mt-4">
+                    <div className="flex gap-2 items-center">
+                      <div
+                        className="p-2 relative rounded-full text-white hover:bg-[#212536] cursor-pointer border-[gray] border"
+                        onClick={() => handleRate(item.id)}
+                      >
+                        <HiOutlineStar className="text-2xl" />
+                        <RatingComponent
+                          isRate={isRate === item.id}
+                          id={item.id}
+                          mediaType={"tv"}
+                        />
+                      </div>
+                      <div className="text-base font-medium">Đánh giá!</div>
+                    </div>
+                    <div className="flex gap-2 items-center">
+                      <div
+                        className="p-2 cursor-pointer rounded-full text-white hover:bg-[#212536] border-[gray] border"
+                        onClick={() =>
+                          handleFavoriteToggle(item.id, isFavorite)
+                        }
+                      >
+                        {isFavorite ? (
+                          <HiHeart className="text-red-500 text-2xl" />
+                        ) : (
+                          <HiOutlineHeart className="text-gray-300 text-2xl" />
+                        )}
+                      </div>
+                      <div className="text-base font-medium">Yêu thích</div>
+                    </div>
+                    <div className="flex gap-2 items-center">
+                      <div
+                        className="p-2 cursor-pointer rounded-full text-white hover:bg-[#212536] border-[gray] border"
+                        onClick={() => toggleFollowlist(item.id, false)}
+                      >
+                        <HiX className="text-2xl" />
+                      </div>
+                      <div className="text-base font-medium">Xóa</div>
+                    </div>
                   </div>
                 </div>
-
-                <p className="mt-2 text-white line-clamp-3">
-                  {item.overview || "Không có mô tả"}
-                </p>
-
-                {/* Buttons */}
-                <div className="flex gap-2 mt-4">
-                  <div className="flex gap-2 items-center">
-                    <div className="p-2 cursor-pointer rounded-full text-white hover:bg-[#212536] border-[gray] border">
-                      <HiOutlineStar className="text-2xl" />
-                    </div>
-                    <div className="text-base font-medium">Đánh giá!</div>
-                  </div>
-                  <div className="flex gap-2 items-center">
-                    <div
-                      className="p-2 cursor-pointer rounded-full text-white hover:bg-[#212536] border-[gray] border"
-                      onClick={() => handleFavoriteToggle(item.id)}
-                    >
-                      {editFavorite.has(item.id) ? (
-                        <HiHeart className="text-red-500 text-2xl" />
-                      ) : (
-                        <HiOutlineHeart className="text-gray-300 text-2xl" />
-                      )}
-                    </div>
-                    <div className="text-base font-medium">Yêu thích</div>
-                  </div>
-                  <div className="flex gap-2 items-center">
-                    <div className="p-2 cursor-pointer rounded-full text-white hover:bg-[#212536] border-[gray] border">
-                      <MdFormatListBulletedAdd className="text-2xl" />
-                    </div>
-                    <div className="text-base font-medium">
-                      Thêm vào danh sách
-                    </div>
-                  </div>
-                  <div className="flex gap-2 items-center">
-                    <div
-                      className="p-2 cursor-pointer rounded-full text-white hover:bg-[#212536] border-[gray] border"
-                      onClick={() => toggleFollowlist(item.id, false)}
-                    >
-                      <HiX className="text-2xl" />
-                    </div>
-                    <div className="text-base font-medium">Xóa</div>
-                  </div>
-                </div>
-              </div>
-            </li>
-          ))}
+              </li>
+            );
+          })}
       </ul>
     </div>
   );
