@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import img_user_default from "../../../../assets/Images/img_user_default.png";
+import { useSpring, animated } from "@react-spring/web";
 import { Link } from "react-router-dom";
 
 const UserProfile = ({ accountDetails }) => {
@@ -10,6 +11,12 @@ const UserProfile = ({ accountDetails }) => {
   const handleAvatarClick = () => {
     setShowDetails((prev) => !prev); // Toggle hiển thị chi tiết khi click
   };
+
+  const dropdownAnimation = useSpring({
+    opacity: showDetails ? 1 : 0,
+    transform: showDetails ? "scale(1)" : "scale(0.9)",
+    config: { tension: 500, friction: 40, mass: 1.3 },
+  });
 
   // Đóng chi tiết khi click ra ngoài
   useEffect(() => {
@@ -57,9 +64,10 @@ const UserProfile = ({ accountDetails }) => {
 
       {/* Chi tiết thông tin (chỉ hiển thị khi click vào avatar) */}
       {showDetails && (
-        <div
+        <animated.div
+        style={dropdownAnimation}
           ref={detailsRef} // Gắn ref vào chi tiết thông tin
-          className="absolute right-0 top-full mt-2 p-4 bg-[rgba(3,37,65)] text-white border border-gray-300 rounded-lg shadow-2xl opacity-100 visible transition-all duration-300 z-30 w-[300px] pointer-events-auto"
+          className="absolute right-0 top-full mt-2 p-4 bg-[rgba(3,37,65)] text-white border border-gray-300 rounded-lg shadow-2xl opacity-100 visible z-30 w-[300px] pointer-events-auto"
         >
           {/* Thông tin tài khoản */}
           <h2 className="text-lg font-bold mb-2 border-b border-white pb-1">
@@ -122,7 +130,7 @@ const UserProfile = ({ accountDetails }) => {
               Đăng xuất
             </p>
           </div>
-        </div>
+        </animated.div>
       )}
     </div>
   );

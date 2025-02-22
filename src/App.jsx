@@ -14,7 +14,9 @@ import TvDetail from "./Features/TvDetail";
 import MovieByList from "./Features/MovieByList";
 import FollowList from "./Features/FollowList";
 import ScrollToTop from "./Components/common/ScrollToTop";
-import MovieList from "./Features/MovieList";
+import Gmovie from "./Features/Gmovie";
+import GmovieDetail from "./Features/GmovieDetail";
+import GmoviePlay from "./Features/GmoviePlay";
 
 function App() {
   return (
@@ -34,7 +36,9 @@ function App() {
               <Route path="/watch-list" element={<WatchList />} />
               <Route path="/movie-by-list/:listId" element={<MovieByList />} />
               <Route path="/follow-list" element={<FollowList />} />
-              <Route path="/test" element={<MovieList />} />
+              <Route path="/gmovie" element={<Gmovie />} />
+              <Route path="/gmovie-detail/:slug" element={<GmovieDetail />} />
+              <Route path="/gmovie-play/:slug/:epslug" element={<GmoviePlay />} />
             </Route>
               <Route path="/login" element={<Login />} />
           </Routes>
