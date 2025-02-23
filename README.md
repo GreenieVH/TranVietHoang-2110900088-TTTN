@@ -21,6 +21,11 @@
     2️⃣ Clone dự án
         git clone https://github.com/GreenieVH/TranVietHoang-2110900088-TTTN.git Hoặc sử dụng file .zip đã có
         cd movie-app
+        Nếu clone từ link github vui lòng tạo 1 file .env và thêm các phần sau
+        VITE_API_KEY=API Read Access Token (Lấy ở trang web https://www.themoviedb.org/settings/api)
+        VITE_IMGS_URL=https://image.tmdb.org/t/p/w200
+        VITE_IMG_URL=https://image.tmdb.org/t/p/w500
+        VITE_IMGL_URL=https://image.tmdb.org/t/p/w1280
     3️⃣ Cài đặt dependencies
         npm install
     4️⃣ Chạy ứng dụng

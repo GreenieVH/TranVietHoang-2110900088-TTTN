@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import FilterMovies from "../FilterMovies";
 import { useGenres, useMoviesFilter } from "../../Servives/GlobalApi";
 import MovieList from "../MovieList";
-import ChangePage from "../../Components/common/changePage";
+import ChangePage from "../../Components/common/ChangePage";
 
 function MoviesByGenre({ selectedGenre, genreName }) {
   const [filterVisible, setFilterVisible] = useState(false);

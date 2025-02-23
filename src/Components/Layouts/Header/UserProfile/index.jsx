@@ -110,7 +110,7 @@ const UserProfile = ({ accountDetails }) => {
               </Link>
             </p>
             <p className="cursor-pointer hover:bg-gray-700 p-2 rounded-md transition-all duration-300">
-              <Link to="" className="text-white hover:text-white">
+              <Link to="/gmovie" className="text-white hover:text-white">
                 Xếp hạng
               </Link>
             </p>

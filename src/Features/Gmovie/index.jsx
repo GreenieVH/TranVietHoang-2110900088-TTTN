@@ -1,7 +1,7 @@
-import ChangePage from "../../Components/common/changePage";
 import { HiOutlinePlayCircle } from "react-icons/hi2";
 import { useFetchGmovie } from "../../Servives/GphimApi";
 import { useNavigate } from "react-router-dom";
+import ChangePage from "../../Components/common/ChangePage";
 
 function Gmovie() {
   const navigate = useNavigate();

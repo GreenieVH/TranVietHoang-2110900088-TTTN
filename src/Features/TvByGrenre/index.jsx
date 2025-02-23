@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { useTvFilter, useTvGenres } from "../../Servives/GlobalApi";
 import FilterTv from "../FilterTv";
-import ChangePage from "../../Components/common/changePage";
+import ChangePage from "../../Components/common/ChangePage";
 import TvList from "../TvList";
 
 function TvByGrenre({ selectedGenre, genreName }) {
