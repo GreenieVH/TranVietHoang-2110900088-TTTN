@@ -10,6 +10,7 @@ import HeaderItem from "./HeaderItem";
 import UserProfile from "./UserProfile";
 import GenresList from "../../ui/GenresList";
 import SearchBar from "../../ui/SearchBar";
+import { useFetchCategory } from "../../../Servives/GphimApi";
 
 function Header() {
   const navigate = useNavigate();
@@ -17,14 +18,16 @@ function Header() {
   const { accountDetails } = useAccountDetails(sessionId);
   const { genres } = useGenres();
   const { tvGenres } = useTvGenres();
+  const { cate } = useFetchCategory();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef(null);
 
   const menu = [
     { name: "Trang chủ", icon: HiHome, link: "/" },
+    { name: "GPhim", icon: HiTv, link: "/gmovie/hanh-dong", isGenres: true  },
     { name: "Phim lẻ", icon: HiPlayCircle, link: "/movies/28", isGenres: true },
-    { name: "Phim Bộ", icon: HiTv, link: "/tvs/10759", isGenres: true },
+    { name: "Phim bộ", icon: HiTv, link: "/tvs/10759", isGenres: true },
     { name: "Yêu thích", icon: HiStar, link: "/favoritelist" },
     { name: "Danh sách", icon: HiPlus, link: "/watch-list" },
   ];
@@ -55,10 +58,15 @@ function Header() {
                   genres={genres}
                   onSelectGenre={(id) => navigate(`/movies/${id}`)}
                 />
-              ) : (
+              ) : item.name === "Phim bộ" ? (
                 <GenresList
                   genres={tvGenres}
                   onSelectGenre={(id) => navigate(`/tvs/${id}`)}
+                />
+              ) : (
+                <GenresList
+                  genres={cate}
+                  onSelectGenre={(slug) => navigate(`/gmovie/${slug}`)}
                 />
               )}
             </div>

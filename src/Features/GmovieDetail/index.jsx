@@ -16,6 +16,7 @@ function GmovieDetail() {
   const [activeTab, setActiveTab] = useState("gmovie");
   const navigate = useNavigate();
 
+  const embedUrl = gmovie?.movie?.trailer_url?.replace("watch?v=", "embed/");
   const handleWatchMovie = () => {
     console.log("Gmovie data:", gmovie); // Kiểm tra dữ liệu phim nhận được
 
@@ -111,7 +112,7 @@ function GmovieDetail() {
                 : "N/A"}{" "}
               -{" "}
               {gmovie.movie.status === "completed"
-                ? "Đã hoan thanh"
+                ? "Đã hoàn thành"
                 : "Đang phát hành"}
             </p>
             <div className="flex items-center mb-2 gap-2">
@@ -153,7 +154,6 @@ function GmovieDetail() {
                 thành viên)
               </p>
             </div>
-            <p className="text-gray-300 text-lg italic mb-2">null</p>
             <h2 className="text-xl font-semibold mb-2">Mô tả:</h2>
             <p className="leading-relaxed mb-6">
               {gmovie.movie.content || "Không có mô tả"}
@@ -170,8 +170,11 @@ function GmovieDetail() {
               <div>
                 <h2 className="text-xl font-semibold mb-2">Biên kịch:</h2>
                 <p>
-                  {gmovie.movie.actor
-                    ? gmovie.movie.actor
+                  {gmovie?.movie?.actor
+                    ? gmovie?.movie?.actor
+                        .slice(0, 3)
+                        .map((item) => item)
+                        .join(", ")
                     : "Không có thông tin"}
                 </p>
               </div>
@@ -180,19 +183,18 @@ function GmovieDetail() {
           {/* video */}
           <div className={`${!show ? "hidden" : "flex-1"} `}>
             {show && (
-              //   <div className="flex flex-col transform transition-all duration-400 ease-in-out animate-show">
-              //     <iframe
-              //       width="100%"
-              //       height="450"
-              //       src={`https://www.youtube.com/embed/${trailerKey}`}
-              //       title={`${gmovie.title} Trailer`}
-              //       frameBorder="0"
-              //       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              //       allowFullScreen
-              //       className="rounded-md shadow-md"
-              //     ></iframe>
-              //   </div>
-              <VideoEmbed embedUrl="https://player.phimapi.com/player/?url=https://s4.phim1280.tv/20250222/rqcJuEsR/index.m3u8" />
+              <div className="flex flex-col transform transition-all duration-400 ease-in-out animate-show">
+                <iframe
+                  width="100%"
+                  height="450"
+                  src={embedUrl}
+                  title={`${gmovie?.movie?.name} Trailer`}
+                  frameBorder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                  className="rounded-md shadow-md"
+                ></iframe>
+              </div>
             )}
           </div>
         </div>

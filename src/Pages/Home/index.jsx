@@ -26,7 +26,7 @@ function Home() {
   const { dataPopular } = useGetPopular();
 
   return (
-    <div className="px-16 max-w-screen-2xl mx-auto">
+    <div className="px-16 max-w-screen-2xl mx-auto"> 
       <Sliders />
       <Trending
         dataTrending={dataTrending}

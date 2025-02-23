@@ -17,11 +17,13 @@ import ScrollToTop from "./Components/common/ScrollToTop";
 import Gmovie from "./Features/Gmovie";
 import GmovieDetail from "./Features/GmovieDetail";
 import GmoviePlay from "./Features/GmoviePlay";
+import PageTitle from "./Components/common/PageTitle";
 
 function App() {
   return (
     <>
       <BrowserRouter>
+        <PageTitle />
         <ScrollToTop />
         <AuthContext>
           <Routes>
@@ -36,11 +38,14 @@ function App() {
               <Route path="/watch-list" element={<WatchList />} />
               <Route path="/movie-by-list/:listId" element={<MovieByList />} />
               <Route path="/follow-list" element={<FollowList />} />
-              <Route path="/gmovie" element={<Gmovie />} />
+              <Route path="/gmovie/:the_loai" element={<Gmovie />} />
               <Route path="/gmovie-detail/:slug" element={<GmovieDetail />} />
-              <Route path="/gmovie-play/:slug/:epslug" element={<GmoviePlay />} />
+              <Route
+                path="/gmovie-play/:slug/:epslug"
+                element={<GmoviePlay />}
+              />
             </Route>
-              <Route path="/login" element={<Login />} />
+            <Route path="/login" element={<Login />} />
           </Routes>
         </AuthContext>
       </BrowserRouter>
